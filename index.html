@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hytel Paint - Phase 1</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hytel Paint Application</h1>
+            <p class="subtitle">Phase 1 - Basic Drawing Tools</p>
+        </header>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="colorPicker">Color:</label>
+                <input type="color" id="colorPicker" value="#000000">
+            </div>
+            
+            <div class="control-group">
+                <label for="brushSize">Brush Size:</label>
+                <input type="range" id="brushSize" min="1" max="50" value="5">
+                <span id="brushSizeValue">5</span>
+            </div>
+            
+            <div class="control-group">
+                <button id="brushBtn" class="tool-btn active">Brush</button>
+                <button id="eraserBtn" class="tool-btn">Eraser</button>
+            </div>
+            
+            <div class="control-group">
+                <button id="clearBtn" class="action-btn">Clear Canvas</button>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="paintCanvas"></canvas>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 Hytel Paint Project - Phase 1</p>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
