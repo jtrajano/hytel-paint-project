@@ -7,6 +7,16 @@ var spacing = 10;
 var eraserX = 550;
 var isEraser = false;
 
+
+// Brush size variables
+var brushSize = 20;
+var minBrushSize = 5;
+var maxBrushSize = 50;
+var sizeControlX = 350;
+var sizeControlY = 20;
+var sizeControlWidth = 150;
+var sizeControlHeight = 20;
+
 const TEST_MODE = true;
 
 function setup() {
@@ -42,7 +52,7 @@ function draw() {
   fill(fillColor);
   noStroke();
   if(mouseIsPressed && mouseY > 50) {
-    ellipse(mouseX, mouseY, 40, 40);
+    ellipse(mouseX, mouseY, brushSize, brushSize);
   }
 }
 
@@ -85,6 +95,8 @@ function drawPalette() {
     rect(eraserX, paletteY, colorSize, colorSize);
     noStroke();
   }
+  // Draw size control
+  drawSizeControl();
 }
 
 function checkColorClick() {
@@ -101,7 +113,12 @@ function checkColorClick() {
     if (isEraserClicked(mouseX, mouseY, eraserX, paletteY, colorSize)) {
       isEraser = true;
       fillColor = '#999999'; // Set to background color
+         return;
     }
+    
+    // Check size control click
+    checkSizeClick(mouseX, mouseY);
+
   }
 }
 
@@ -126,4 +143,48 @@ function isEraserClicked(mouseX, mouseY, eraserX, paletteY, colorSize) {
          mouseX < eraserX + colorSize &&
          mouseY > paletteY && 
          mouseY < paletteY + colorSize;
+}
+
+
+// Draw size control slider
+function drawSizeControl() {
+  // Draw background bar
+  fill(200);
+  stroke(0);
+  strokeWeight(1);
+  rect(sizeControlX, sizeControlY, sizeControlWidth, sizeControlHeight);
+  
+  // Calculate thumb position based on current brush size
+  const thumbPosition = map(brushSize, minBrushSize, maxBrushSize, sizeControlX, sizeControlX + sizeControlWidth);
+  
+  // Draw thumb indicator
+  fill(100);
+  noStroke();
+  rect(thumbPosition - 5, sizeControlY - 5, 10, sizeControlHeight + 10);
+  
+  // Draw size label
+  fill(0);
+  textAlign(LEFT, CENTER);
+  textSize(12);
+  text(brushSize, sizeControlX + sizeControlWidth + 10, sizeControlY + sizeControlHeight / 2);
+}
+
+// Check if size control was clicked and update brush size
+function checkSizeClick(mouseX, mouseY) {
+  debugger;
+  if (mouseY >= sizeControlY && mouseY <= sizeControlY + sizeControlHeight &&
+      mouseX >= sizeControlX && mouseX <= sizeControlX + sizeControlWidth) {
+    // Calculate brush size based on mouse position on slider
+    const relativeX = mouseX - sizeControlX;
+    const ratio = constrain(relativeX / sizeControlWidth, 0, 1);
+    brushSize = round(map(ratio, 0, 1, minBrushSize, maxBrushSize));
+  }
+}
+
+// Pure function: checks if size control was clicked
+function isSizeControlClicked(mouseX, mouseY, sizeControlX, sizeControlY, sizeControlWidth, sizeControlHeight) {
+  return mouseY > sizeControlY && 
+         mouseY < sizeControlY + sizeControlHeight &&
+         mouseX > sizeControlX && 
+         mouseX < sizeControlX + sizeControlWidth;
 }
