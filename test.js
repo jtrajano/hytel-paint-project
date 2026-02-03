@@ -1,33 +1,38 @@
 function runTests() {
   suite("test click color", () => {
     it("clicks first color", () => {
-      let result = getClickedColorIndex(55, 25, colors, 50, 20, 50, 10);
+      // First circle center: paletteX + 0*(colorSize+spacing) + colorSize/2 = 20 + 10 = 30
+      let result = getClickedColorIndex(30, 30, colors, 20, 20, 20, 10);
       expect(result).toBe(0)
     });
 
     it("clicks second color", () => {
-      let result = getClickedColorIndex(115, 25, colors, 50, 20, 50, 10);
+      // Second circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      let result = getClickedColorIndex(60, 30, colors, 20, 20, 20, 10);
       expect(result).toBe(1)
     });
 
     it("no color clicked when outside", () => {
-      let result = getClickedColorIndex(10, 25, colors, 50, 20, 50, 10);
+      // Far outside all circles
+      let result = getClickedColorIndex(5, 5, colors, 20, 20, 20, 10);
       expect(result).toBe(-1)
     });
     
     it("no color when Y is outside", () => {
-      let result = getClickedColorIndex(55, 100, colors, 50, 20, 50, 10);
+      // Same X as first color but Y far away
+      let result = getClickedColorIndex(30, 100, colors, 20, 20, 20, 10);
       expect(result).toBe(-1)
     });
   });
 
   suite("test eraser click",()=>{
     it("eraser clicked", ()=>{
-      let result = isEraserClicked(560, 30, 550, 20, 50);
+      // Eraser circle center: eraserX + colorSize/2 = 550 + 10 = 560
+      let result = isEraserClicked(560, 30, 550, 20, 20);
       expect(result).toBe(true);
     });
     it("eraser not clicked when far away", ()=>{
-      let result = isEraserClicked(100, 30, 550, 20, 50);
+      let result = isEraserClicked(100, 30, 550, 20, 20);
       expect(result).toBe(false);
     })
   })
@@ -44,9 +49,7 @@ function runTests() {
     });
 
     it("brush size changes when clicking slider", () => {
-     
       const originalSize = brushSize;
-      debugger;
       checkSizeClick(sizeControlX + sizeControlWidth, sizeControlY + 1);
       expect(brushSize).toBe(maxBrushSize);
       brushSize = originalSize;
