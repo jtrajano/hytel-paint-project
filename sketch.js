@@ -7,7 +7,6 @@ var spacing = 10;
 var eraserX = 550;
 var isEraser = false;
 
-
 // Brush size variables
 var brushSize = 20;
 var minBrushSize = 5;
@@ -17,7 +16,7 @@ var sizeControlY = 20;
 var sizeControlWidth = 150;
 var sizeControlHeight = 20;
 
-const TEST_MODE = true;
+const TEST_MODE = false;
 
 function setup() {
   TEST_MODE ? initializeTest() : initializeCanvas(); 
@@ -59,43 +58,38 @@ function draw() {
 function drawPalette() {
   noStroke();
   for (let i = 0; i < colors.length; i++) {
+    let centerX = paletteX + i * (colorSize + spacing) + colorSize / 2;
+    let centerY = paletteY + colorSize / 2;
+    
     fill(colors[i]);
-    rect(paletteX + i * (colorSize + spacing), paletteY, colorSize, colorSize);
+    circle(centerX, centerY, colorSize);
     
     // Highlight selected color with border
     if (fillColor === colors[i] && !isEraser) {
       stroke(0);
       strokeWeight(3);
       noFill();
-      rect(paletteX + i * (colorSize + spacing), paletteY, colorSize, colorSize);
+      circle(centerX, centerY, colorSize);
       noStroke();
     }
   }
   
-  // Draw eraser button
+  // Draw eraser button as circle
+  let eraserCenterX = eraserX + colorSize / 2;
+  let eraserCenterY = paletteY + colorSize / 2;
   fill(255);
   stroke(0);
   strokeWeight(2);
-  rect(eraserX, paletteY, colorSize, colorSize);
-  
-  // Draw eraser icon
-  //fill(220);
-  //noStroke();
-  //rect(eraserX + 10, paletteY + 15, 30, 20);
-  //fill(0);
-  //textAlign(CENTER, CENTER);
-  //textSize(10);
-  //text('ERASE', eraserX + 25, paletteY + 40);
+  circle(eraserCenterX, eraserCenterY, colorSize);
   
   // Highlight eraser if selected
   if (isEraser) {
     stroke(0);
     strokeWeight(3);
     noFill();
-    rect(eraserX, paletteY, colorSize, colorSize);
+    circle(eraserCenterX, eraserCenterY, colorSize);
     noStroke();
   }
-  // Draw size control
   drawSizeControl();
 }
 
@@ -124,27 +118,27 @@ function checkColorClick() {
 
 // Pure function: determines which color index was clicked (if any)
 function getClickedColorIndex(mouseX, mouseY, colors, paletteX, paletteY, colorSize, spacing) {
-  if (mouseY < paletteY || mouseY > paletteY + colorSize) {
-    return -1; // Not in palette area
-  }
+  let radius = colorSize / 2;
   
   for (let i = 0; i < colors.length; i++) {
-    let x = paletteX + i * (colorSize + spacing);
-    if (mouseX > x && mouseX < x + colorSize) {
+    let centerX = paletteX + i * (colorSize + spacing) + colorSize / 2;
+    let centerY = paletteY + colorSize / 2;
+    let distance = dist(mouseX, mouseY, centerX, centerY);
+    if (distance < radius) {
       return i;
     }
   }
-  return -1; // No color clicked
+  return -1;
 }
 
 // Pure function: checks if eraser button was clicked
 function isEraserClicked(mouseX, mouseY, eraserX, paletteY, colorSize) {
-  return mouseX > eraserX && 
-         mouseX < eraserX + colorSize &&
-         mouseY > paletteY && 
-         mouseY < paletteY + colorSize;
+  let eraserCenterX = eraserX + colorSize / 2;
+  let eraserCenterY = paletteY + colorSize / 2;
+  let radius = colorSize / 2;
+  let distance = dist(mouseX, mouseY, eraserCenterX, eraserCenterY);
+  return distance < radius;
 }
-
 
 // Draw size control slider
 function drawSizeControl() {
