@@ -1,8 +1,8 @@
 var fillColor = 'black';
 var colors = ['white', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'black'];
 var paletteY = 20;
-var paletteX = 50;
-var colorSize = 50;
+var paletteX = 20;
+var colorSize = 20;
 var spacing = 10;
 var eraserX = 550;
 var isEraser = false;
@@ -15,6 +15,7 @@ function setup() {
 function initializeTest(){
   noCanvas();
   runTests();
+  testSummary();
   noLoop();
 }
 
@@ -33,14 +34,14 @@ function draw() {
   drawPalette();
   
   // Check which color is clicked
-  if (mouseIsPressed && mouseY < 100) {
+  if (mouseIsPressed && mouseY < 50) {
     checkColorClick();
   }
   
   // Draw on canvas
   fill(fillColor);
   noStroke();
-  if(mouseIsPressed && mouseY > 100) {
+  if(mouseIsPressed && mouseY > 50) {
     ellipse(mouseX, mouseY, 40, 40);
   }
 }
@@ -68,13 +69,13 @@ function drawPalette() {
   rect(eraserX, paletteY, colorSize, colorSize);
   
   // Draw eraser icon
-  fill(220);
-  noStroke();
-  rect(eraserX + 10, paletteY + 15, 30, 20);
-  fill(0);
-  textAlign(CENTER, CENTER);
-  textSize(10);
-  text('ERASE', eraserX + 25, paletteY + 40);
+  //fill(220);
+  //noStroke();
+  //rect(eraserX + 10, paletteY + 15, 30, 20);
+  //fill(0);
+  //textAlign(CENTER, CENTER);
+  //textSize(10);
+  //text('ERASE', eraserX + 25, paletteY + 40);
   
   // Highlight eraser if selected
   if (isEraser) {
@@ -125,10 +126,4 @@ function isEraserClicked(mouseX, mouseY, eraserX, paletteY, colorSize) {
          mouseX < eraserX + colorSize &&
          mouseY > paletteY && 
          mouseY < paletteY + colorSize;
-}
-
-// Pure function: checks if point is inside a rectangle
-function isInsideRect(x, y, rectX, rectY, rectWidth, rectHeight) {
-  return x > rectX && x < rectX + rectWidth && 
-         y > rectY && y < rectY + rectHeight;
 }
