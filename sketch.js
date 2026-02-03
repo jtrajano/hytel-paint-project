@@ -7,11 +7,21 @@ var spacing = 10;
 var eraserX = 550;
 var isEraser = false;
 
+const TEST_MODE = true;
+
 function setup() {
-  createCanvas(600, 600);
-  background('#999999');
-  noStroke();
-  // Draw color palette once
+  TEST_MODE ? initializeTest() : initializeCanvas(); 
+}
+function initializeTest(){
+  noCanvas();
+  runTests();
+  noLoop();
+}
+
+function initializeCanvas(){
+  createCanvas(600, 600);  
+  background('#999999');  
+  noStroke();  // Draw color palette once  drawPalette();  if (TEST_MODE) {
   drawPalette();
 }
 
@@ -78,23 +88,47 @@ function drawPalette() {
 
 function checkColorClick() {
   if (mouseIsPressed) {
-    // Check color palette
-    for (let i = 0; i < colors.length; i++) {
-      let x = paletteX + i * (colorSize + spacing);
-      let y = paletteY;
-      
-      if (mouseX > x && mouseX < x + colorSize && 
-          mouseY > y && mouseY < y + colorSize) {
-        fillColor = colors[i];
-        isEraser = false;
-      }
+    // Use testable pure functions
+    const colorIndex = getClickedColorIndex(mouseX, mouseY, colors, paletteX, paletteY, colorSize, spacing);
+    if (colorIndex !== -1) {
+      fillColor = colors[colorIndex];
+      isEraser = false;
+      return;
     }
     
-    // Check eraser button
-    if (mouseX > eraserX && mouseX < eraserX + colorSize &&
-        mouseY > paletteY && mouseY < paletteY + colorSize) {
+    // Check eraser button using pure function
+    if (isEraserClicked(mouseX, mouseY, eraserX, paletteY, colorSize)) {
       isEraser = true;
       fillColor = '#999999'; // Set to background color
     }
   }
+}
+
+// Pure function: determines which color index was clicked (if any)
+function getClickedColorIndex(mouseX, mouseY, colors, paletteX, paletteY, colorSize, spacing) {
+  if (mouseY < paletteY || mouseY > paletteY + colorSize) {
+    return -1; // Not in palette area
+  }
+  
+  for (let i = 0; i < colors.length; i++) {
+    let x = paletteX + i * (colorSize + spacing);
+    if (mouseX > x && mouseX < x + colorSize) {
+      return i;
+    }
+  }
+  return -1; // No color clicked
+}
+
+// Pure function: checks if eraser button was clicked
+function isEraserClicked(mouseX, mouseY, eraserX, paletteY, colorSize) {
+  return mouseX > eraserX && 
+         mouseX < eraserX + colorSize &&
+         mouseY > paletteY && 
+         mouseY < paletteY + colorSize;
+}
+
+// Pure function: checks if point is inside a rectangle
+function isInsideRect(x, y, rectX, rectY, rectWidth, rectHeight) {
+  return x > rectX && x < rectX + rectWidth && 
+         y > rectY && y < rectY + rectHeight;
 }
