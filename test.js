@@ -31,6 +31,33 @@ function runTests() {
       expect(result).toBe(false);
     })
   })
+
+  suite("test brush size slider", () => {
+    it("slider click is detected", () => {
+      let result = isSizeControlClicked(sizeControlX + 10, sizeControlY + 5, sizeControlX, sizeControlY, sizeControlWidth, sizeControlHeight);
+      expect(result).toBe(true)
+    });
+
+    it("slider click outside is not detected", () => {
+      let result = isSizeControlClicked(sizeControlX - 5, sizeControlY + 5, sizeControlX, sizeControlY, sizeControlWidth, sizeControlHeight);
+      expect(result).toBe(false)
+    });
+
+    it("brush size changes when clicking slider", () => {
+     
+      const originalSize = brushSize;
+      debugger;
+      checkSizeClick(sizeControlX + sizeControlWidth, sizeControlY + 1);
+      expect(brushSize).toBe(maxBrushSize);
+      brushSize = originalSize;
+    });
+
+    it("brush size does not change when clicking outside slider", () => {
+      const originalSize = brushSize;
+      checkSizeClick(sizeControlX + sizeControlWidth + 50, sizeControlY + 1);
+      expect(brushSize).toBe(originalSize);
+    });
+  });
 }
 
 
