@@ -1,3 +1,13 @@
+
+const TEST_MODE = true;
+
+function initializeTest(){
+  noCanvas();
+  runTests();
+  testSummary();
+  noLoop();
+}
+
 function runTests() {
   suite("test click color", () => {
     it("clicks first color", () => {
@@ -10,6 +20,42 @@ function runTests() {
       // Second circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
       let result = getClickedColorIndex(60, 30, colors, 20, 20, 20, 10);
       expect(result).toBe(1)
+    });
+
+    it("clicks third color", () => {
+      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      let result = getClickedColorIndex(90, 30, colors, 20, 20, 20, 10);
+      expect(result).toBe(2)
+    });
+
+    it("clicks fourth color", () => {
+      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      let result = getClickedColorIndex(120, 30, colors, 20, 20, 20, 10);
+      expect(result).toBe(3)
+    });
+
+    it("clicks fourth color", () => {
+      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      let result = getClickedColorIndex(150, 30, colors, 20, 20, 20, 10);
+      expect(result).toBe(4)
+    });
+
+    it("clicks fifth color", () => {
+      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      let result = getClickedColorIndex(180, 30, colors, 20, 20, 20, 10);
+      expect(result).toBe(5)
+    });
+
+    it("clicks sixth color", () => {
+      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      let result = getClickedColorIndex(210, 30, colors, 20, 20, 20, 10);
+      expect(result).toBe(6)
+    });
+
+    it("clicks seventh color", () => {
+      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      let result = getClickedColorIndex(240, 30, colors, 20, 20, 20, 10);
+      expect(result).toBe(7)
     });
 
     it("no color clicked when outside", () => {
@@ -61,60 +107,65 @@ function runTests() {
       expect(brushSize).toBe(originalSize);
     });
   });
+
+  
+  suite("test calculateBrushSize", () => {
+    it("returns max brush size when clicking at right edge", () => {
+      let result = calculateBrushSize(350 + 150, 25, 350, 20, 150, 20, 5, 50, 20);
+      expect(result).toBe(50);
+    });
+
+    it("returns min brush size when clicking at left edge", () => {
+      let result = calculateBrushSize(350, 25, 350, 20, 150, 20, 5, 50, 20);
+      expect(result).toBe(5);
+    });
+
+    it("returns mid brush size when clicking at center", () => {
+      let result = calculateBrushSize(350 + 75, 25, 350, 20, 150, 20, 5, 50, 20);
+      // Mid point between 5 and 50 is approximately 28
+      expect(result).toBe(28);
+    });
+
+    it("returns current size when clicking outside control", () => {
+      let result = calculateBrushSize(100, 25, 350, 20, 150, 20, 5, 50, 20);
+      expect(result).toBe(20);
+    });
+
+    it("returns current size when clicking below control", () => {
+      let result = calculateBrushSize(400, 50, 350, 20, 150, 20, 5, 50, 20);
+      expect(result).toBe(20);
+    });
+
+    it("returns current size when clicking above control", () => {
+      let result = calculateBrushSize(400, 10, 350, 20, 150, 20, 5, 50, 20);
+      expect(result).toBe(20);
+    });
+
+    it("constrains to max when clicking beyond right edge", () => {
+      let result = calculateBrushSize(500, 25, 350, 20, 150, 20, 5, 50, 20);
+      console.log(result);
+      expect(result).toBe(50);
+    });
+
+    it("constrains to min when clicking before left edge but within Y bounds", () => {
+      // This tests the constrain function
+      let result = calculateBrushSize(340, 25, 350, 20, 150, 20, 5, 50, 20);
+      expect(result).toBe(20); // Outside bounds, so returns current
+    });
+
+    it("calculates quarter position correctly", () => {
+      // 25% of the way: 350 + (150 * 0.25) = 387.5
+      let result = calculateBrushSize(388, 25, 350, 20, 150, 20, 5, 50, 20);
+      // 25% between 5 and 50 = 5 + (45 * 0.25) = 16.25, rounded = 16
+      expect(result).toBe(16);
+    });
+
+    it("calculates three-quarter position correctly", () => {
+      // 75% of the way: 350 + (150 * 0.75) = 462.5
+      let result = calculateBrushSize(463, 25, 350, 20, 150, 20, 5, 50, 20);
+      // 75% between 5 and 50 = 5 + (45 * 0.75) = 38.75, rounded = 39
+      expect(result).toBe(39);
+    });
+  });
 }
 
-
-// Test framework
-
-function assert(condition, message) {
-  if (!condition) {
-    console.error("❌ FAIL:", message);
-  } else {
-    console.log("✅ PASS:", message);
-  }
-}
-
-let __t = {
-  suiteStack: [],
-  total: 0,
-  passed: 0,
-  failed: 0,
-};
-
-function suite(name, fn) {
-  __t.suiteStack.push(name);
-  try { fn(); } finally { __t.suiteStack.pop(); }
-}
-
-function it(name, fn) {
-  const suite = __t.suiteStack.join(" > ");
-  const fullName = suite ? `${suite} > ${name}` : name;
-  __t.total++;
-
-  try {
-    fn();
-    __t.passed++;
-    console.log(`✅ ${fullName}`);
-  } catch (err) {
-    __t.failed++;
-    console.error(`❌ ${fullName}\n   ${err.message}`);
-  }
-}
-
-function expect(actual) {
-  return {
-    toBe(expected) {
-      if (actual !== expected) throw new Error(`Expected ${expected} but got ${actual}`);
-    },
-    toEqual(expected) {
-      // NOTE: JSON stringify is "good enough" for simple data structures.
-      const a = JSON.stringify(actual);
-      const e = JSON.stringify(expected);
-      if (a !== e) throw new Error(`Expected ${e} but got ${a}`);
-    }
-  };
-}
-
-function testSummary() {
-  console.log(`\n🧪 Tests: ${__t.total} | ✅ ${__t.passed} | ❌ ${__t.failed}\n`);
-}
