@@ -36,7 +36,7 @@ class Slider {
     }
 
     calculateBrushSize(mouseX, mouseY) {
-        if (!this.isSizeControlClicked(mouseX, mouseY, this.sizeControlX, this.sizeControlY, this.sizeControlWidth, this.sizeControlHeight)) {
+        if (!this.isSizeControlClicked(mouseX, mouseY)) {
             return this.brushSize; // No change if not clicking on control
         }
         const relativeX = mouseX - this.sizeControlX;

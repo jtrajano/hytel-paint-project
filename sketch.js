@@ -28,7 +28,6 @@ function draw() {
   // Check which color is clicked
   
   if (mouseIsPressed && mouseY < 50) {
-    debugger;
     colorPalette.checkColorClick(mouseX, mouseY);
     slider.checkSizeClick(mouseX, mouseY);
   }
