@@ -8,7 +8,6 @@ class Slider {
         this.brushSize = 20;
         this.minBrushSize = 5;
         this.maxBrushSize = 50;
-        
     }
     render(){
         fill(200);

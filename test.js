@@ -1,5 +1,5 @@
 
-const TEST_MODE = true;
+const TEST_MODE = false;
 
 function initializeTest(){
   noCanvas();
@@ -12,7 +12,6 @@ function runTests() {
   suite("test click color", () => {
     const colorPalette = new ColorPalette();
     it("clicks first color", () => {
-      debugger;
       // First circle center: paletteX + 0*(colorSize+spacing) + colorSize/2 = 20 + 10 = 30
       let result = colorPalette.getClickedColorIndex(30, 30, colorPalette.colors, 20, 20, 20, 10);
       expect(result).toBe(0)
