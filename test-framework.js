@@ -15,7 +15,11 @@ let __t = {
 
 function suite(name, fn) {
   __t.suiteStack.push(name);
-  try { fn(); } finally { __t.suiteStack.pop(); }
+  try {
+    fn();
+  } finally {
+    __t.suiteStack.pop();
+  }
 }
 
 function it(name, fn) {
@@ -36,17 +40,20 @@ function it(name, fn) {
 function expect(actual) {
   return {
     toBe(expected) {
-      if (actual !== expected) throw new Error(`Expected ${expected} but got ${actual}`);
+      if (actual !== expected)
+        throw new Error(`Expected ${expected} but got ${actual}`);
     },
     toEqual(expected) {
       // NOTE: JSON stringify is "good enough" for simple data structures.
       const a = JSON.stringify(actual);
       const e = JSON.stringify(expected);
       if (a !== e) throw new Error(`Expected ${e} but got ${a}`);
-    }
+    },
   };
 }
 
 function testSummary() {
-  console.log(`\n🧪 Tests: ${__t.total} | ✅ ${__t.passed} | ❌ ${__t.failed}\n`);
+  console.log(
+    `\n🧪 Tests: ${__t.total} | ✅ ${__t.passed} | ❌ ${__t.failed}\n`,
+  );
 }
