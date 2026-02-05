@@ -1,72 +1,81 @@
 
 
-const slider = new Slider();
-const colorPalette = new ColorPalette();
+class Sketch {
+  constructor(p){
+    this.slider = new Slider(p);
+    this.colorPalette = new ColorPalette(p)
+    this.p = p;
 
-
-function setup() {
-  TEST_MODE ? initializeTest() : initializeCanvas(); 
-}
-
-function initializeCanvas(){
-  createCanvas(1260, 700);  
-  background('#999999');  
-
-  fill('#fff');
-  stroke(0);
-  strokeWeight(1);
-  rect(2, 25, 580, 55, 20);
+    p.setup = ()=> this.setup();
+    p.draw = () => this.draw();
+    p.drawControls= ()=> this.drawControls
+    
+  }
   
-  fill('#fff');  
-  stroke(0);
-  strokeWeight(1);
-  rect(2, 102, 580, 500, 20);
-
-  noStroke(); 
-  slider.initializeComponent();
-  drawControls();
+  setup() {
+    TEST_MODE ? this.initializeTest() : this.initializeCanvas(); 
+  }
+  
+  initializeCanvas(){
+    this.p.createCanvas(1260, 700);  
+    this.p.background('#999999');  
+    
+    this.p.fill('#fff');
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    this.p.rect(2, 25, 580, 55, 20);
+  
+    this.p.fill('#fff');  
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    this.p.rect(2, 102, 580, 500, 20);
+    this.p.noStroke(); 
+    this.slider.initializeComponent(this.p);
+    this.p.drawControls();
 }
 
-function drawControls(){
-  colorPalette.render();
-  slider.render();
+drawControls(){
+  this.colorPalette.render(this.p);
+  this.slider.render(this.p);
 }
-function draw() { 
-   // Clear and redraw the toolbar area to prevent text stacking
-  fill('#fff');
-  stroke(0);
-  strokeWeight(1);
-  rect(2, 25, 580, 55, 20);
-  drawControls();
+draw() { 
+  // Clear and redraw the toolbar area to prevent text stacking
+  this.p.fill('#fff');
+  this.p.stroke(0);
+  this.p.strokeWeight(1);
+  this.p.rect(2, 25, 580, 55, 20);
+  this.drawControls();
 
-  if (mouseIsPressed && mouseY < 82) {
-    colorPalette.checkColorClick(mouseX, mouseY);
-    slider.checkSizeClick(mouseX, mouseY);
+  if (this.p.mouseIsPressed && this.p.mouseY < 82) {
+    this.colorPalette.checkColorClick(this.p.mouseX, this.p.mouseY);
+    this.slider.checkSizeClick(this.p.mouseX, this.p.mouseY);
   }
   
   // for the label of slider
-  fill(0);
-  textAlign(LEFT, CENTER);
-  textSize(12);
-  noStroke();
-  text(slider.brushSize, 490, 50);
+  this.p.fill(0);
+  this.p.textAlign(this.p.LEFT, this.p.CENTER);
+  this.p.textSize(12);
+  this.p.noStroke();
+  this.p.text(this.slider.brushSize, 490, 50);
   
   // Draw on canvas
-  fill(colorPalette.activePaletteColor);
-  noStroke();
-
-  let upperBound = 102 + slider.brushSize/2;
-  let rightBound = 583 - slider.brushSize/2;
-  let leftBound = 2 + slider.brushSize/2;
-  let bottomBound = 550 + slider.brushSize/2;
-  if(mouseIsPressed 
-    && mouseY > upperBound 
-    && mouseY < bottomBound
-    && mouseX < rightBound
-    && mouseX > leftBound  
+  this.p.fill(this.colorPalette.activePaletteColor);
+  this.p.noStroke();
+  
+  let upperBound = 102 + this.slider.brushSize/2;
+  let rightBound = 583 - this.slider.brushSize/2;
+  let leftBound = 2 + this.slider.brushSize/2;
+  let bottomBound = 550 + this.slider.brushSize/2;
+  if(this.p.mouseIsPressed 
+    && this.p.mouseY > upperBound 
+    && this.p.mouseY < bottomBound
+    && this.p.mouseX < rightBound
+    && this.p.mouseX > leftBound  
   ) {
-    ellipse(mouseX, mouseY, slider.brushSize, slider.brushSize);
+    this.p.ellipse(this.p.mouseX, this.p.mouseY, this.slider.brushSize, this.slider.brushSize);
   }
 }
 
+}
 
+new p5(p=> new Sketch(p));

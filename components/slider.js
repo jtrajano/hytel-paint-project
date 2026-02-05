@@ -1,6 +1,6 @@
 
 class Slider {
-    constructor(){ 
+    constructor(p){ 
         this.sizeControlX = 350;
         this.sizeControlY = 40;
         this.sizeControlWidth = 150;
@@ -9,23 +9,24 @@ class Slider {
         this.minBrushSize = 5;
         this.maxBrushSize = 50;
         this.sliderComponent = null;
+        this.p = p;
     }
 
     initializeComponent(){
-        this.sliderComponent = createSlider(5, 50, 0);
+        this.sliderComponent = this.p.createSlider(5, 50, 0);
         this.sliderComponent.position(400, 40);
         this.sliderComponent.size(80);
     }
-    render(){
+    render(p){
         this.brushSize = this.sliderComponent.value();
-        fill(0);
-        textAlign(LEFT, CENTER);
-        textSize(12);
-        noStroke();
-        text(this.brushSize, 490, 50);
+        this.p.fill(0);
+        this.p.textAlign(this.p.LEFT, this.p.CENTER);
+        this.p.textSize(12);
+        this.p.noStroke();
+        this.p.text(this.brushSize, 490, 50);
     }
 
-    checkSizeClick(mouseX, mouseY) {
+    checkSizeClick() {
         this.brushSize = this.sliderComponent.value();
     }
 }
