@@ -22,6 +22,13 @@ class CircleButton extends Button{
         fill(this.color);
         circle(this.centerX, this.centerY, this.colorSize);
 
+        // put borders
+         stroke(0);
+            strokeWeight(1);
+            noFill();
+            circle(this.centerX, this.centerY, this.colorSize);
+            noStroke();
+
         if(this.highLight){
             stroke(this.stroke);
             strokeWeight(this.strokeWeight);

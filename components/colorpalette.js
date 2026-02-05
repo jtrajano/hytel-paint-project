@@ -1,15 +1,14 @@
 class ColorPalette{
 
     constructor(){
-        this.activePaletteColor = 'black';
-        this.colors = ['white', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'black'];
-        this.paletteY = 20;
+        this.activePaletteColor = 'gray';
+        this.colors = ['gray', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'black'];
+        this.paletteY = 40;
         this.paletteX = 20;
         this.colorSize = 20;
         this.spacing = 10;
         this.eraserX = 550;
         this.isEraser = false;
-
     }
 
     render() {
@@ -77,7 +76,7 @@ class ColorPalette{
             // Check eraser button using pure function
             if (this.isEraserClicked(mouseX, mouseY)) {
                 this.isEraser = true;
-                this.activePaletteColor = '#999999'; // Set to background color
+                this.activePaletteColor = '#fff'; // Set to background color
                 return;
             }
         }
