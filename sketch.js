@@ -3,6 +3,17 @@ class Sketch {
     this.slider = new Slider(p);
     this.colorPalette = new ColorPalette(p);
     this.p = p;
+    this.clearButton = new RectButton(p, {
+      positionX: 300,
+      positionY: 35,
+      width: 70,
+      height: 30,
+      label: "Clear",
+      color: "#f2f2f2",
+      stroke: 0,
+      strokeWeight: 1,
+    });
+
     p.setup = () => this.setup();
     p.initializeTest = (p) => initializeTest(p);
   }
@@ -14,15 +25,12 @@ class Sketch {
   initializeCanvas() {
     this.p.draw = () => this.draw();
     this.p.drawControls = () => this.drawControls();
-
     this.p.createCanvas(1260, 700);
     this.p.background("#999999");
-
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
     this.p.rect(2, 25, 580, 55, 20);
-
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
@@ -33,9 +41,11 @@ class Sketch {
   }
 
   drawControls() {
-    this.colorPalette.render(this.p);
-    this.slider.render(this.p);
+    this.colorPalette.render();
+    this.slider.render();
+    this.clearButton.render();
   }
+
   draw() {
     // Clear and redraw the toolbar area to prevent text stacking
     this.p.fill("#fff");
@@ -45,6 +55,10 @@ class Sketch {
     this.drawControls();
 
     if (this.p.mouseIsPressed && this.p.mouseY < 82) {
+      if (this.clearButton.isClicked(this.p.mouseX, this.p.mouseY)) {
+        this.clearButton.click();
+        return;
+      }
       this.colorPalette.checkColorClick(this.p.mouseX, this.p.mouseY);
       this.slider.checkSizeClick(this.p.mouseX, this.p.mouseY);
     }

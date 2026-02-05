@@ -163,6 +163,59 @@ function runTests(p) {
       expect(result).toBe(false);
     });
   });
-}
 
-//}
+  suite("test clear button click", () => {
+    const clearButton = new RectButton(p, {
+      positionX: 300,
+      positionY: 35,
+      width: 70,
+      height: 30,
+      label: "Clear",
+      color: "#f2f2f2",
+      stroke: 0,
+      strokeWeight: 1,
+    });
+
+    it("clear button clicked when inside bounds", () => {
+      // Click in the center of the button
+      let result = clearButton.isClicked(325, 50);
+      expect(result).toBe(true);
+    });
+
+    it("clear button clicked at left edge", () => {
+      // Click at left edge: positionX = 300
+      let result = clearButton.isClicked(300, 50);
+      expect(result).toBe(true);
+    });
+
+    it("clear button clicked at right edge", () => {
+      // Click at right edge: positionX + width = 300 + 70 = 370
+      let result = clearButton.isClicked(370, 50);
+      expect(result).toBe(true);
+    });
+
+    it("clear button not clicked when outside left", () => {
+      // Click left of button
+      let result = clearButton.isClicked(290, 50);
+      expect(result).toBe(false);
+    });
+
+    it("clear button not clicked when outside right", () => {
+      // Click right of button
+      let result = clearButton.isClicked(380, 50);
+      expect(result).toBe(false);
+    });
+
+    it("clear button not clicked when outside top", () => {
+      // Click above button
+      let result = clearButton.isClicked(325, 30);
+      expect(result).toBe(false);
+    });
+
+    it("clear button not clicked when outside bottom", () => {
+      // Click below button
+      let result = clearButton.isClicked(325, 70);
+      expect(result).toBe(false);
+    });
+  });
+}

@@ -30,14 +30,13 @@ class ColorPalette {
       let centerY = this.paletteY + this.colorSize / 2;
       let isHighLight =
         this.activePaletteColor === this.colors[i] && !this.isEraser;
-      let newButton = new CircleButton(
-        this.p,
-        this.colors[i],
-        this.colorSize,
-        centerX,
-        centerY,
-        isHighLight,
-      );
+      let newButton = new CircleButton(this.p, {
+        centerX: centerX,
+        centerY: centerY,
+        color: this.colors[i],
+        colorSize: this.colorSize,
+        highLight: isHighLight,
+      });
       newButton.render();
     }
 
