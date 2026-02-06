@@ -48,7 +48,7 @@ class RectButton extends Button {
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
-    this.p.rect(2, 102, 580, 500, 20);
+    this.p.rect(180, 102, 900, 500, 20);
     this.p.noStroke();
   }
 

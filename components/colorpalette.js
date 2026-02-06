@@ -12,10 +12,10 @@ class ColorPalette {
       "black",
     ];
     this.paletteY = 40;
-    this.paletteX = 20;
+    this.paletteX = 358;
     this.colorSize = 20;
     this.spacing = 10;
-    this.eraserX = 550;
+    this.eraserX = 888;
     this.isEraser = false;
     this.p = p;
   }

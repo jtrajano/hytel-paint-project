@@ -4,7 +4,7 @@ class Sketch {
     this.colorPalette = new ColorPalette(p);
     this.p = p;
     this.clearButton = new RectButton(p, {
-      positionX: 300,
+      positionX: 638,
       positionY: 35,
       width: 70,
       height: 30,
@@ -30,11 +30,11 @@ class Sketch {
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
-    this.p.rect(2, 25, 580, 55, 20);
+    this.p.rect(290, 25, 680, 55, 20);
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
-    this.p.rect(2, 102, 580, 500, 20);
+    this.p.rect(180, 102, 900, 500, 20);
     this.p.noStroke();
     this.slider.initializeComponent(this.p);
     this.p.drawControls();
@@ -51,7 +51,7 @@ class Sketch {
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
-    this.p.rect(2, 25, 580, 55, 20);
+    this.p.rect(290, 25, 680, 55, 20);
     this.drawControls();
 
     if (this.p.mouseIsPressed && this.p.mouseY < 82) {
@@ -68,29 +68,30 @@ class Sketch {
     this.p.textAlign(this.p.LEFT, this.p.CENTER);
     this.p.textSize(12);
     this.p.noStroke();
-    this.p.text(this.slider.brushSize, 490, 50);
+    this.p.text(this.slider.brushSize, 828, 50);
 
     // Draw on canvas
-    this.p.fill(this.colorPalette.activePaletteColor);
-    this.p.noStroke();
+    this.p.stroke(this.colorPalette.activePaletteColor);
+    this.p.strokeWeight(this.slider.brushSize);
+    this.p.strokeCap(this.p.ROUND);
 
     let upperBound = 102 + this.slider.brushSize / 2;
-    let rightBound = 583 - this.slider.brushSize / 2;
-    let leftBound = 2 + this.slider.brushSize / 2;
-    let bottomBound = 550 + this.slider.brushSize / 2;
+    let rightBound = 1080 - this.slider.brushSize / 2;
+    let leftBound = 180 + this.slider.brushSize / 2;
+    let bottomBound = 602 - this.slider.brushSize / 2;
+
     if (
       this.p.mouseIsPressed &&
       this.p.mouseY > upperBound &&
       this.p.mouseY < bottomBound &&
       this.p.mouseX < rightBound &&
-      this.p.mouseX > leftBound
+      this.p.mouseX > leftBound &&
+      this.p.pmouseY > upperBound &&
+      this.p.pmouseY < bottomBound &&
+      this.p.pmouseX < rightBound &&
+      this.p.pmouseX > leftBound
     ) {
-      this.p.ellipse(
-        this.p.mouseX,
-        this.p.mouseY,
-        this.slider.brushSize,
-        this.slider.brushSize,
-      );
+      this.p.line(this.p.pmouseX, this.p.pmouseY, this.p.mouseX, this.p.mouseY);
     }
   }
 }

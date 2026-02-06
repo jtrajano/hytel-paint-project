@@ -1,4 +1,4 @@
-const TEST_MODE = false;
+const TEST_MODE = true;
 
 function initializeTest(p) {
   p.noCanvas();
@@ -11,12 +11,12 @@ function runTests(p) {
   suite("test click color", () => {
     const colorPalette = new ColorPalette(p);
     it("clicks first color", () => {
-      // First circle center: paletteX + 0*(colorSize+spacing) + colorSize/2 = 20 + 10 = 30
+      // First circle center: paletteX + 0*(colorSize+spacing) + colorSize/2 = 358 + 10 = 368
       let result = colorPalette.getClickedColorIndex(
-        30,
+        368,
         50,
         colorPalette.colors,
-        20,
+        358,
         20,
         20,
         10,
@@ -25,12 +25,12 @@ function runTests(p) {
     });
 
     it("clicks second color", () => {
-      // Second circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      // Second circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 358 + 30 + 10 = 398
       let result = colorPalette.getClickedColorIndex(
-        60,
+        398,
         50,
         colorPalette.colors,
-        20,
+        358,
         20,
         20,
         10,
@@ -39,12 +39,12 @@ function runTests(p) {
     });
 
     it("clicks third color", () => {
-      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      // Third circle center: paletteX + 2*(colorSize+spacing) + colorSize/2 = 358 + 60 + 10 = 428
       let result = colorPalette.getClickedColorIndex(
-        90,
+        428,
         50,
         colorPalette.colors,
-        20,
+        358,
         20,
         20,
         10,
@@ -53,12 +53,12 @@ function runTests(p) {
     });
 
     it("clicks fourth color", () => {
-      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      // Fourth circle center: paletteX + 3*(colorSize+spacing) + colorSize/2 = 358 + 90 + 10 = 458
       let result = colorPalette.getClickedColorIndex(
-        120,
+        458,
         50,
         colorPalette.colors,
-        20,
+        358,
         20,
         20,
         10,
@@ -67,12 +67,12 @@ function runTests(p) {
     });
 
     it("clicks fourth color", () => {
-      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      // Fifth circle center: paletteX + 4*(colorSize+spacing) + colorSize/2 = 358 + 120 + 10 = 488
       let result = colorPalette.getClickedColorIndex(
-        150,
+        488,
         50,
         colorPalette.colors,
-        20,
+        358,
         20,
         20,
         10,
@@ -81,12 +81,12 @@ function runTests(p) {
     });
 
     it("clicks fifth color", () => {
-      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      // Sixth circle center: paletteX + 5*(colorSize+spacing) + colorSize/2 = 358 + 150 + 10 = 518
       let result = colorPalette.getClickedColorIndex(
-        180,
+        518,
         50,
         colorPalette.colors,
-        20,
+        358,
         20,
         20,
         10,
@@ -95,12 +95,12 @@ function runTests(p) {
     });
 
     it("clicks sixth color", () => {
-      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      // Seventh circle center: paletteX + 6*(colorSize+spacing) + colorSize/2 = 358 + 180 + 10 = 548
       let result = colorPalette.getClickedColorIndex(
-        210,
+        548,
         50,
         colorPalette.colors,
-        20,
+        358,
         20,
         20,
         10,
@@ -109,12 +109,12 @@ function runTests(p) {
     });
 
     it("clicks seventh color", () => {
-      // Third circle center: paletteX + 1*(colorSize+spacing) + colorSize/2 = 20 + 30 + 10 = 60
+      // Eighth circle center: paletteX + 7*(colorSize+spacing) + colorSize/2 = 358 + 210 + 10 = 578
       let result = colorPalette.getClickedColorIndex(
-        240,
+        578,
         50,
         colorPalette.colors,
-        20,
+        358,
         20,
         20,
         10,
@@ -154,19 +154,19 @@ function runTests(p) {
   suite("test eraser click", () => {
     const colorPalette = new ColorPalette(p);
     it("eraser clicked", () => {
-      // Eraser circle center: eraserX + colorSize/2 = 550 + 10 = 560
-      let result = colorPalette.isEraserClicked(560, 50, 550, 20, 20);
+      // Eraser circle center: eraserX + colorSize/2 = 888 + 10 = 898
+      let result = colorPalette.isEraserClicked(898, 50, 888, 20, 20);
       expect(result).toBe(true);
     });
     it("eraser not clicked when far away", () => {
-      let result = colorPalette.isEraserClicked(100, 50, 550, 20, 20);
+      let result = colorPalette.isEraserClicked(100, 50, 888, 20, 20);
       expect(result).toBe(false);
     });
   });
 
   suite("test clear button click", () => {
     const clearButton = new RectButton(p, {
-      positionX: 300,
+      positionX: 638,
       positionY: 35,
       width: 70,
       height: 30,
@@ -178,31 +178,31 @@ function runTests(p) {
 
     it("clear button clicked when inside bounds", () => {
       // Click in the center of the button
-      let result = clearButton.isClicked(325, 50);
+      let result = clearButton.isClicked(663, 50);
       expect(result).toBe(true);
     });
 
     it("clear button clicked at left edge", () => {
-      // Click at left edge: positionX = 300
-      let result = clearButton.isClicked(300, 50);
+      // Click at left edge: positionX = 638
+      let result = clearButton.isClicked(638, 50);
       expect(result).toBe(true);
     });
 
     it("clear button clicked at right edge", () => {
-      // Click at right edge: positionX + width = 300 + 70 = 370
-      let result = clearButton.isClicked(370, 50);
+      // Click at right edge: positionX + width = 638 + 70 = 708
+      let result = clearButton.isClicked(708, 50);
       expect(result).toBe(true);
     });
 
     it("clear button not clicked when outside left", () => {
       // Click left of button
-      let result = clearButton.isClicked(290, 50);
+      let result = clearButton.isClicked(628, 50);
       expect(result).toBe(false);
     });
 
     it("clear button not clicked when outside right", () => {
       // Click right of button
-      let result = clearButton.isClicked(380, 50);
+      let result = clearButton.isClicked(718, 50);
       expect(result).toBe(false);
     });
 
