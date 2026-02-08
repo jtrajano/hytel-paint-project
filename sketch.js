@@ -1,0 +1,339 @@
+import { ToolBar } from "./components/toolbar.js";
+import { initializeTest, TEST_MODE } from "./tests/test.js";
+
+export class Sketch {
+  constructor(p) {
+    this.toolbar = new ToolBar(p);
+    this.eraserButton = {};
+    this.p = p;
+    this.strokes = [];
+    this.redoStrokes = [];
+    this.currentStroke = null;
+    this.canvasX = 180;
+    this.canvasY = 102;
+    this.canvasW = 900;
+    this.canvasH = 500;
+    this.drawingLayer = null;
+
+    this.toolbarX = 290;
+    this.toolbarY = 25;
+    this.toolbarW = 680;
+    this.toolbarH = 55;
+    this.toolbarPadding = 20;
+
+    p.setup = () => this.setup();
+    p.initializeTest = (p) => initializeTest(p);
+    this.p.mousePressed = () => this.handleMousePressed();
+    this.p.mouseReleased = () => this.handleMouseReleased();
+  }
+
+  setup() {
+    TEST_MODE ? initializeTest(this.p) : this.initializeCanvas();
+  }
+
+  initializeCanvas() {
+    this.p.draw = () => this.draw();
+    this.p.drawControls = () => this.drawControls();
+    this.p.createCanvas(1260, 700);
+    this.p.background("#999999");
+    this.p.fill("#fff");
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    this.updateToolbarLayout();
+    this.p.rect(this.toolbarX, this.toolbarY, this.toolbarW, this.toolbarH, 20);
+    this.p.fill("#fff");
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    this.p.rect(this.canvasX, this.canvasY, this.canvasW, this.canvasH, 20);
+    this.p.noStroke();
+
+    this.drawingLayer = this.p.createGraphics(this.canvasW, this.canvasH);
+    this.p.drawControls();
+  }
+
+  handleMousePressed() {
+    if (this.p.mouseY >= 82) {
+      return;
+    }
+    if (
+      this.toolbar.clearButton &&
+      this.toolbar.clearButton.isClicked(this.p.mouseX, this.p.mouseY)
+    ) {
+      this.clearCanvas();
+      return;
+    }
+    if (this.isUndoClicked(this.p.mouseX, this.p.mouseY)) {
+      this.undo();
+      return;
+    }
+    if (this.isRedoClicked(this.p.mouseX, this.p.mouseY)) {
+      this.redo();
+      return;
+    }
+    if (this.isDownloadClicked(this.p.mouseX, this.p.mouseY)) {
+      this.downloadDrawing();
+      return;
+    }
+    this.toolbar.checkColorClick(this.p.mouseX, this.p.mouseY);
+    this.slider.checkSizeClick(this.p.mouseX, this.p.mouseY);
+  }
+
+  handleMouseReleased() {
+    if (!this.currentStroke) {
+      return;
+    }
+    if (this.currentStroke.points.length > 1) {
+      this.strokes.push(this.currentStroke);
+      this.redoStrokes = [];
+    }
+    this.currentStroke = null;
+  }
+  drawControls() {
+    this.toolbar.render(
+      this.eraserSVG,
+      this.undoLeftSVG,
+      this.undoRightSVG,
+      this.downloadSVG,
+    );
+
+    // if (this.clearButton) {
+    //   this.clearButton.render();
+    // }
+  }
+
+  draw() {
+    // Clear and redraw the toolbar area to prevent text stacking
+    this.p.fill("#fff");
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    this.updateToolbarLayout();
+    this.p.rect(this.toolbarX, this.toolbarY, this.toolbarW, this.toolbarH, 20);
+    this.drawControls();
+
+    // Redraw canvas area and the drawing layer
+    this.p.fill("#fff");
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    this.p.rect(this.canvasX, this.canvasY, this.canvasW, this.canvasH, 20);
+    this.p.noStroke();
+    if (this.drawingLayer) {
+      this.p.image(this.drawingLayer, this.canvasX, this.canvasY);
+    }
+
+    if (this.drawingLayer) {
+      this.drawingLayer.stroke(this.toolbar.activePaletteColor);
+      this.drawingLayer.strokeWeight(this.toolbar.slider.brushSize);
+      this.drawingLayer.strokeCap(this.p.ROUND);
+    }
+
+    let upperBound = this.canvasY + this.toolbar.slider.brushSize / 2;
+    let rightBound =
+      this.canvasX + this.canvasW - this.toolbar.slider.brushSize / 2;
+    let leftBound = this.canvasX + this.toolbar.slider.brushSize / 2;
+    let bottomBound =
+      this.canvasY + this.canvasH - this.toolbar.slider.brushSize / 2;
+
+    if (
+      this.p.mouseIsPressed &&
+      this.p.mouseY > upperBound &&
+      this.p.mouseY < bottomBound &&
+      this.p.mouseX < rightBound &&
+      this.p.mouseX > leftBound &&
+      this.p.pmouseY > upperBound &&
+      this.p.pmouseY < bottomBound &&
+      this.p.pmouseX < rightBound &&
+      this.p.pmouseX > leftBound
+    ) {
+      if (!this.currentStroke) {
+        this.currentStroke = {
+          color: this.toolbar.activePaletteColor,
+          size: this.toolbar.slider.brushSize,
+          points: [],
+        };
+      }
+      this.currentStroke.points.push({
+        x: this.p.mouseX,
+        y: this.p.mouseY,
+      });
+      if (this.drawingLayer) {
+        this.drawingLayer.line(
+          this.p.pmouseX - this.canvasX,
+          this.p.pmouseY - this.canvasY,
+          this.p.mouseX - this.canvasX,
+          this.p.mouseY - this.canvasY,
+        );
+      }
+    }
+  }
+
+  updateToolbarLayout() {
+    const paletteWidth =
+      this.toolbar.colors.length * this.toolbar.colorSize +
+      (this.toolbar.colors.length - 1) * this.toolbar.spacing;
+    const controlGap = 30;
+    const gapBetweenPalette = 30;
+    const gapBetweenSlider = 30;
+    const iconWidth = 23;
+    const sliderWidth = 80;
+    const sliderLabelGap = 20;
+    const sliderBlockWidth = sliderWidth + sliderLabelGap;
+    const controlsWidth = controlGap * 4 + iconWidth;
+    const toolbarWidth =
+      paletteWidth +
+      gapBetweenPalette +
+      sliderBlockWidth +
+      gapBetweenSlider +
+      controlsWidth +
+      this.toolbarPadding * 2;
+    this.toolbarW = toolbarWidth;
+    this.toolbarX = (this.p.width - this.toolbarW) / 2;
+    const paletteX = this.toolbarX + this.toolbarPadding;
+    const sliderX = paletteX + paletteWidth + gapBetweenPalette;
+    const eraserX = sliderX + sliderBlockWidth + gapBetweenSlider;
+    this.toolbar.setLayout({
+      paletteX,
+      eraserX,
+      controlGap,
+    });
+    this.toolbar.slider.setLayout({ x: sliderX, y: this.toolbarY + 15 });
+    if (this.toolbar.clearButton) {
+      this.toolbar.clearButton.positionX =
+        this.toolbar.downloadX + this.toolbar.controlGap;
+      this.toolbar.clearButton.positionY = this.toolbarY + 15;
+    }
+  }
+
+  handleMousePressed() {
+    if (this.p.mouseY >= 82) {
+      return;
+    }
+    if (
+      this.toolbar.clearButton &&
+      this.toolbar.clearButton.isClicked(this.p.mouseX, this.p.mouseY)
+    ) {
+      this.clearCanvas();
+      return;
+    }
+    if (this.toolbar.isUndoClicked(this.p.mouseX, this.p.mouseY)) {
+      this.undo();
+      return;
+    }
+    if (this.toolbar.isRedoClicked(this.p.mouseX, this.p.mouseY)) {
+      this.redo();
+      return;
+    }
+    if (this.toolbar.isDownloadClicked(this.p.mouseX, this.p.mouseY)) {
+      this.downloadDrawing();
+      return;
+    }
+    this.toolbar.checkColorClick(this.p.mouseX, this.p.mouseY);
+    this.toolbar.slider.checkSizeClick(this.p.mouseX, this.p.mouseY);
+  }
+
+  handleMouseReleased() {
+    if (!this.currentStroke) {
+      return;
+    }
+    if (this.currentStroke.points.length > 1) {
+      this.strokes.push(this.currentStroke);
+      this.redoStrokes = [];
+    }
+    this.currentStroke = null;
+  }
+
+  undo() {
+    if (this.strokes.length === 0) {
+      return;
+    }
+    const stroke = this.strokes.pop();
+    this.redoStrokes.push(stroke);
+    this.redrawFromStrokes();
+  }
+
+  redo() {
+    if (this.redoStrokes.length === 0) {
+      return;
+    }
+    const stroke = this.redoStrokes.pop();
+    this.strokes.push(stroke);
+    this.redrawFromStrokes();
+  }
+
+  redrawFromStrokes() {
+    if (!this.drawingLayer) {
+      return;
+    }
+    this.drawingLayer.clear();
+    for (const stroke of this.strokes) {
+      this.drawingLayer.stroke(stroke.color);
+      this.drawingLayer.strokeWeight(stroke.size);
+      this.drawingLayer.strokeCap(this.p.ROUND);
+      for (let i = 1; i < stroke.points.length; i++) {
+        const prev = stroke.points[i - 1];
+        const cur = stroke.points[i];
+        this.drawingLayer.line(
+          prev.x - this.canvasX,
+          prev.y - this.canvasY,
+          cur.x - this.canvasX,
+          cur.y - this.canvasY,
+        );
+      }
+    }
+  }
+
+  clearCanvas() {
+    if (this.drawingLayer) {
+      this.drawingLayer.clear();
+    }
+    this.strokes = [];
+    this.redoStrokes = [];
+    this.currentStroke = null;
+  }
+
+  downloadDrawing() {
+    const now = new Date();
+    const timestamp =
+      now.getFullYear().toString() +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      String(now.getDate()).padStart(2, "0") +
+      "-" +
+      String(now.getHours()).padStart(2, "0") +
+      String(now.getMinutes()).padStart(2, "0") +
+      String(now.getSeconds()).padStart(2, "0");
+    if (!this.drawingLayer) {
+      return;
+    }
+    const output = this.p.createGraphics(this.canvasW, this.canvasH);
+    output.background(255);
+    output.image(this.drawingLayer, 0, 0);
+    const img = output.get();
+    output.remove();
+    this.p.save(img, `drawing-${timestamp}.png`);
+  }
+}
+let sketchInstance = null;
+
+new p5((p) => {
+  // Define preload BEFORE Sketch is created
+  p.preload = function () {
+    if (sketchInstance) {
+      sketchInstance.toolbar.eraserSVG = p.loadImage(
+        "assets/eraser-svgrepo-com.svg",
+      );
+      sketchInstance.toolbar.undoLeftSVG = p.loadImage(
+        "assets/undo-left-svgrepo-com.svg",
+      );
+      sketchInstance.toolbar.undoRightSVG = p.loadImage(
+        "assets/undo-right-svgrepo-com.svg",
+      );
+      sketchInstance.toolbar.trashSVG = p.loadImage(
+        "assets/trash-alt-svgrepo-com.svg",
+      );
+      sketchInstance.toolbar.downloadSVG = p.loadImage(
+        "assets/download-square-svgrepo-com.svg",
+      );
+    }
+  };
+
+  sketchInstance = new Sketch(p);
+});
