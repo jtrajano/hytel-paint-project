@@ -1,8 +1,7 @@
 import { ToolBar } from "./components/toolbar.js";
-import { Slider } from "./components/slider.js";
-import { SVGButton } from "./components/SVGButton.js";
+import { initializeTest, TEST_MODE } from "./tests/test.js";
 
-class Sketch {
+export class Sketch {
   constructor(p) {
     this.toolbar = new ToolBar(p);
     this.eraserButton = {};
@@ -29,7 +28,7 @@ class Sketch {
   }
 
   setup() {
-    TEST_MODE ? this.p.initializeTest(this.p) : this.initializeCanvas();
+    TEST_MODE ? initializeTest(this.p) : this.initializeCanvas();
   }
 
   initializeCanvas() {
