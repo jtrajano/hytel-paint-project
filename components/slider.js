@@ -1,9 +1,7 @@
 class Slider {
   constructor(p) {
-    this.sizeControlX = 688;
+    this.sizeControlX = 570;
     this.sizeControlY = 40;
-    this.sizeControlWidth = 150;
-    this.sizeControlHeight = 20;
     this.brushSize = 20;
     this.minBrushSize = 5;
     this.maxBrushSize = 50;
@@ -12,8 +10,12 @@ class Slider {
   }
 
   initializeComponent() {
-    this.sliderComponent = this.p.createSlider(5, 50, 0);
-    this.sliderComponent.position(738, 40);
+    this.sliderComponent = this.p.createSlider(
+      this.minBrushSize,
+      this.maxBrushSize,
+      0,
+    );
+    this.sliderComponent.position(this.sizeControlX, this.sizeControlY);
     this.sliderComponent.size(80);
   }
 
@@ -23,7 +25,7 @@ class Slider {
     this.p.textAlign(this.p.LEFT, this.p.CENTER);
     this.p.textSize(12);
     this.p.noStroke();
-    this.p.text(this.brushSize, 828, 50);
+    this.p.text(this.brushSize, 660, 50);
   }
 
   checkSizeClick() {

@@ -26,13 +26,20 @@ class Button {
     console.log("click method not implemented.");
   }
 }
+
 class RectButton extends Button {
-  constructor(p, { positionX, positionY, width, height, ...rest }) {
+  constructor(
+    p,
+    { positionX, positionY, width, height, activeColor, enableActive, ...rest },
+  ) {
     super(p, rest);
     this.positionX = positionX;
     this.positionY = positionY;
     this.width = width;
     this.height = height;
+    this.activeColor = activeColor || "#2f6feb";
+    this.isActive = false;
+    this.enableActive = enableActive || false;
   }
 
   isClicked(mouseX, mouseY) {
@@ -45,6 +52,9 @@ class RectButton extends Button {
   }
 
   click() {
+    if (this.enableActive) {
+      this.isActive = true;
+    }
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
@@ -53,7 +63,9 @@ class RectButton extends Button {
   }
 
   render() {
-    this.p.fill(this.color);
+    this.p.fill(
+      this.enableActive && this.isActive ? this.activeColor : this.color,
+    );
     this.p.stroke(this.stroke);
     this.p.strokeWeight(this.strokeWeight);
     this.p.rect(this.positionX, this.positionY, this.width, this.height, 6);
@@ -65,6 +77,46 @@ class RectButton extends Button {
       this.label,
       this.positionX + this.width / 2,
       this.positionY + this.height / 2,
+    );
+  }
+}
+
+class SVGButton extends RectButton {
+  constructor(p, { img, ...rest }) {
+    super(p, { enableActive: true, ...rest });
+    this.img = img;
+    this.imgInverted = null;
+    this.isActive = false;
+  }
+  click() {
+    this.isActive = true;
+    super.click();
+  }
+  render() {
+    const hovered = this.isClicked(this.p.mouseX, this.p.mouseY);
+    const pressed = hovered && this.p.mouseIsPressed;
+    const active = this.isActive || pressed;
+    if (hovered || active) {
+      this.p.noStroke();
+      this.p.fill(active ? "#2f6feb" : "#e5e5e5");
+      this.p.rect(
+        this.positionX - 5,
+        this.positionY - 5,
+        this.width + 10,
+        this.height + 10,
+        6,
+      );
+    }
+    if (active && !this.imgInverted && this.img) {
+      this.imgInverted = this.img.get();
+      this.imgInverted.filter(this.p.INVERT);
+    }
+    this.p.image(
+      active && this.imgInverted ? this.imgInverted : this.img,
+      this.positionX,
+      this.positionY,
+      this.width,
+      this.height,
     );
   }
 }

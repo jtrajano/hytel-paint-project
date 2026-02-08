@@ -2,9 +2,10 @@ class Sketch {
   constructor(p) {
     this.slider = new Slider(p);
     this.colorPalette = new ColorPalette(p);
+    this.eraserButton = {};
     this.p = p;
     this.clearButton = new RectButton(p, {
-      positionX: 638,
+      positionX: 690,
       positionY: 35,
       width: 70,
       height: 30,
@@ -13,7 +14,7 @@ class Sketch {
       stroke: 0,
       strokeWeight: 1,
     });
-
+    p.preload = () => this.preload();
     p.setup = () => this.setup();
     p.initializeTest = (p) => initializeTest(p);
   }
@@ -21,7 +22,10 @@ class Sketch {
   setup() {
     TEST_MODE ? this.p.initializeTest(this.p) : this.initializeCanvas();
   }
-
+  preload() {
+    this.eraserSVG = this.p.loadImage("assets/eraser-svgrepo-com.svg");
+    //debugger;
+  }
   initializeCanvas() {
     this.p.draw = () => this.draw();
     this.p.drawControls = () => this.drawControls();
@@ -41,8 +45,9 @@ class Sketch {
   }
 
   drawControls() {
-    this.colorPalette.render();
+    this.colorPalette.render(this.eraserSVG);
     this.slider.render();
+    //this.eraserButton.render();
     this.clearButton.render();
   }
 
@@ -68,7 +73,7 @@ class Sketch {
     this.p.textAlign(this.p.LEFT, this.p.CENTER);
     this.p.textSize(12);
     this.p.noStroke();
-    this.p.text(this.slider.brushSize, 828, 50);
+    this.p.text(this.slider.brushSize, 660, 50);
 
     // Draw on canvas
     this.p.stroke(this.colorPalette.activePaletteColor);

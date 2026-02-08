@@ -12,15 +12,16 @@ class ColorPalette {
       "black",
     ];
     this.paletteY = 40;
-    this.paletteX = 358;
+    this.paletteX = 310;
     this.colorSize = 20;
     this.spacing = 10;
     this.eraserX = 888;
     this.isEraser = false;
+    this.eraserButton = null;
     this.p = p;
   }
 
-  render() {
+  render(eraserSVG) {
     this.p.noStroke();
     for (let i = 0; i < this.colors.length; i++) {
       let centerX =
@@ -40,22 +41,35 @@ class ColorPalette {
       newButton.render();
     }
 
+    if (!this.eraserButton && eraserSVG) {
+      this.eraserButton = new SVGButton(this.p, {
+        img: eraserSVG,
+        width: 23,
+        height: 23,
+        positionX: this.eraserX,
+        positionY: 40,
+      });
+    }
+    if (this.eraserButton) {
+      this.eraserButton.isActive = this.isEraser;
+      this.eraserButton.render();
+    }
     // Draw eraser button as circle
-    let eraserCenterX = this.eraserX + this.colorSize / 2;
-    let eraserCenterY = this.paletteY + this.colorSize / 2;
-    this.p.fill(255);
-    this.p.stroke(0);
-    this.p.strokeWeight(2);
-    this.p.circle(eraserCenterX, eraserCenterY, this.colorSize);
+    // let eraserCenterX = this.eraserX + this.colorSize / 2;
+    // let eraserCenterY = this.paletteY + this.colorSize / 2;
+    // this.p.fill(255);
+    // this.p.stroke(0);
+    // this.p.strokeWeight(2);
+    // this.p.circle(eraserCenterX, eraserCenterY, this.colorSize);
 
     // Highlight eraser if selected
-    if (this.isEraser) {
-      this.p.stroke(0);
-      this.p.strokeWeight(3);
-      this.p.noFill();
-      this.p.circle(eraserCenterX, eraserCenterY, this.colorSize);
-      this.p.noStroke();
-    }
+    // if (this.isEraser) {
+    //   this.p.stroke(0);
+    //   this.p.strokeWeight(3);
+    //   this.p.noFill();
+    //   this.p.circle(eraserCenterX, eraserCenterY, this.colorSize);
+    //   this.p.noStroke();
+    // }
   }
 
   // Pure function: checks if eraser button was clicked
