@@ -1,7 +1,11 @@
+import { ToolBar } from "./base/toolbar.js";
+import { Slider } from "./base/slider.js";
+import { SVGButton } from "./components/SVGButton.js";
+
 class Sketch {
   constructor(p) {
     this.slider = new Slider(p);
-    this.colorPalette = new ColorPalette(p);
+    this.toolbar = new ToolBar(p);
     this.eraserButton = {};
     this.p = p;
     this.strokes = [];
@@ -60,7 +64,7 @@ class Sketch {
         img: this.trashSVG,
         width: 23,
         height: 23,
-        positionX: this.colorPalette.downloadX + this.colorPalette.controlGap,
+        positionX: this.toolbar.downloadX + this.toolbar.controlGap,
         positionY: 40,
         enableActive: false,
       });
@@ -70,7 +74,7 @@ class Sketch {
   }
 
   drawControls() {
-    this.colorPalette.render(
+    this.toolbar.render(
       this.eraserSVG,
       this.undoLeftSVG,
       this.undoRightSVG,
@@ -102,7 +106,7 @@ class Sketch {
     }
 
     if (this.drawingLayer) {
-      this.drawingLayer.stroke(this.colorPalette.activePaletteColor);
+      this.drawingLayer.stroke(this.toolbar.activePaletteColor);
       this.drawingLayer.strokeWeight(this.slider.brushSize);
       this.drawingLayer.strokeCap(this.p.ROUND);
     }
@@ -125,7 +129,7 @@ class Sketch {
     ) {
       if (!this.currentStroke) {
         this.currentStroke = {
-          color: this.colorPalette.activePaletteColor,
+          color: this.toolbar.activePaletteColor,
           size: this.slider.brushSize,
           points: [],
         };
@@ -147,8 +151,8 @@ class Sketch {
 
   updateToolbarLayout() {
     const paletteWidth =
-      this.colorPalette.colors.length * this.colorPalette.colorSize +
-      (this.colorPalette.colors.length - 1) * this.colorPalette.spacing;
+      this.toolbar.colors.length * this.toolbar.colorSize +
+      (this.toolbar.colors.length - 1) * this.toolbar.spacing;
     const controlGap = 30;
     const gapBetweenPalette = 30;
     const gapBetweenSlider = 30;
@@ -169,7 +173,7 @@ class Sketch {
     const paletteX = this.toolbarX + this.toolbarPadding;
     const sliderX = paletteX + paletteWidth + gapBetweenPalette;
     const eraserX = sliderX + sliderBlockWidth + gapBetweenSlider;
-    this.colorPalette.setLayout({
+    this.toolbar.setLayout({
       paletteX,
       eraserX,
       controlGap,
@@ -177,7 +181,7 @@ class Sketch {
     this.slider.setLayout({ x: sliderX, y: this.toolbarY + 15 });
     if (this.clearButton) {
       this.clearButton.positionX =
-        this.colorPalette.downloadX + this.colorPalette.controlGap;
+        this.toolbar.downloadX + this.toolbar.controlGap;
       this.clearButton.positionY = this.toolbarY + 15;
     }
   }
@@ -193,19 +197,19 @@ class Sketch {
       this.clearCanvas();
       return;
     }
-    if (this.colorPalette.isUndoClicked(this.p.mouseX, this.p.mouseY)) {
+    if (this.toolbar.isUndoClicked(this.p.mouseX, this.p.mouseY)) {
       this.undo();
       return;
     }
-    if (this.colorPalette.isRedoClicked(this.p.mouseX, this.p.mouseY)) {
+    if (this.toolbar.isRedoClicked(this.p.mouseX, this.p.mouseY)) {
       this.redo();
       return;
     }
-    if (this.colorPalette.isDownloadClicked(this.p.mouseX, this.p.mouseY)) {
+    if (this.toolbar.isDownloadClicked(this.p.mouseX, this.p.mouseY)) {
       this.downloadDrawing();
       return;
     }
-    this.colorPalette.checkColorClick(this.p.mouseX, this.p.mouseY);
+    this.toolbar.checkColorClick(this.p.mouseX, this.p.mouseY);
     this.slider.checkSizeClick(this.p.mouseX, this.p.mouseY);
   }
 

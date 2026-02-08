@@ -1,4 +1,4 @@
-class Slider {
+export class Slider {
   constructor(p) {
     this.sizeControlX = 570;
     this.sizeControlY = 40;

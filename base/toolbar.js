@@ -1,4 +1,7 @@
-class ColorPalette {
+import { SVGButton } from "../components/SVGButton.js";
+import { CircleButton } from "../components/CircleButton.js";
+
+export class ToolBar {
   constructor(p) {
     this.activePaletteColor = "gray";
     this.colors = [
