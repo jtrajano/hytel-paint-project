@@ -1,5 +1,6 @@
 import { SVGButton } from "./SVGButton.js";
 import { CircleButton } from "./CircleButton.js";
+import { Slider } from "./slider.js";
 
 export class ToolBar {
   constructor(p) {
@@ -29,58 +30,9 @@ export class ToolBar {
     this.redoButton = null;
     this.downloadButton = null;
     this.clearButton = null;
+    this.slider = new Slider(p);
+    this.slider.initializeComponent(this.p);
     this.p = p;
-    this.p.preload = () => this.preload();
-    this.p.mousePressed = () => this.handleMousePressed();
-    this.p.mouseReleased = () => this.handleMouseReleased();
-  }
-
-  preload() {
-    this.eraserSVG = this.p.loadImage("assets/eraser-svgrepo-com.svg");
-    this.undoLeftSVG = this.p.loadImage("assets/undo-left-svgrepo-com.svg");
-    this.undoRightSVG = this.p.loadImage("assets/undo-right-svgrepo-com.svg");
-    this.trashSVG = this.p.loadImage("assets/trash-alt-svgrepo-com.svg");
-    this.downloadSVG = this.p.loadImage(
-      "assets/download-square-svgrepo-com.svg",
-    );
-  }
-
-  handleMousePressed() {
-    if (this.p.mouseY >= 82) {
-      return;
-    }
-    if (
-      this.clearButton &&
-      this.clearButton.isClicked(this.p.mouseX, this.p.mouseY)
-    ) {
-      this.clearCanvas();
-      return;
-    }
-    if (this.isUndoClicked(this.p.mouseX, this.p.mouseY)) {
-      this.undo();
-      return;
-    }
-    if (this.isRedoClicked(this.p.mouseX, this.p.mouseY)) {
-      this.redo();
-      return;
-    }
-    if (this.isDownloadClicked(this.p.mouseX, this.p.mouseY)) {
-      this.downloadDrawing();
-      return;
-    }
-    this.checkColorClick(this.p.mouseX, this.p.mouseY);
-    this.slider.checkSizeClick(this.p.mouseX, this.p.mouseY);
-  }
-
-  handleMouseReleased() {
-    if (!this.currentStroke) {
-      return;
-    }
-    if (this.currentStroke.points.length > 1) {
-      this.strokes.push(this.currentStroke);
-      this.redoStrokes = [];
-    }
-    this.currentStroke = null;
   }
 
   setLayout({ paletteX, eraserX, controlGap }) {
@@ -193,22 +145,11 @@ export class ToolBar {
     if (this.downloadButton) {
       this.downloadButton.render();
     }
-    // Draw eraser button as circle
-    // let eraserCenterX = this.eraserX + this.colorSize / 2;
-    // let eraserCenterY = this.paletteY + this.colorSize / 2;
-    // this.p.fill(255);
-    // this.p.stroke(0);
-    // this.p.strokeWeight(2);
-    // this.p.circle(eraserCenterX, eraserCenterY, this.colorSize);
+    if (this.clearButton) {
+      this.clearButton.render();
+    }
 
-    // Highlight eraser if selected
-    // if (this.isEraser) {
-    //   this.p.stroke(0);
-    //   this.p.strokeWeight(3);
-    //   this.p.noFill();
-    //   this.p.circle(eraserCenterX, eraserCenterY, this.colorSize);
-    //   this.p.noStroke();
-    // }
+    this.slider.render();
   }
 
   // Pure function: checks if eraser button was clicked
