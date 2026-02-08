@@ -1,5 +1,5 @@
-import { SVGButton } from "../components/SVGButton.js";
-import { CircleButton } from "../components/CircleButton.js";
+import { SVGButton } from "./SVGButton.js";
+import { CircleButton } from "./CircleButton.js";
 
 export class ToolBar {
   constructor(p) {
@@ -28,7 +28,59 @@ export class ToolBar {
     this.undoButton = null;
     this.redoButton = null;
     this.downloadButton = null;
+    this.clearButton = null;
     this.p = p;
+    this.p.preload = () => this.preload();
+    this.p.mousePressed = () => this.handleMousePressed();
+    this.p.mouseReleased = () => this.handleMouseReleased();
+  }
+
+  preload() {
+    this.eraserSVG = this.p.loadImage("assets/eraser-svgrepo-com.svg");
+    this.undoLeftSVG = this.p.loadImage("assets/undo-left-svgrepo-com.svg");
+    this.undoRightSVG = this.p.loadImage("assets/undo-right-svgrepo-com.svg");
+    this.trashSVG = this.p.loadImage("assets/trash-alt-svgrepo-com.svg");
+    this.downloadSVG = this.p.loadImage(
+      "assets/download-square-svgrepo-com.svg",
+    );
+  }
+
+  handleMousePressed() {
+    if (this.p.mouseY >= 82) {
+      return;
+    }
+    if (
+      this.clearButton &&
+      this.clearButton.isClicked(this.p.mouseX, this.p.mouseY)
+    ) {
+      this.clearCanvas();
+      return;
+    }
+    if (this.isUndoClicked(this.p.mouseX, this.p.mouseY)) {
+      this.undo();
+      return;
+    }
+    if (this.isRedoClicked(this.p.mouseX, this.p.mouseY)) {
+      this.redo();
+      return;
+    }
+    if (this.isDownloadClicked(this.p.mouseX, this.p.mouseY)) {
+      this.downloadDrawing();
+      return;
+    }
+    this.checkColorClick(this.p.mouseX, this.p.mouseY);
+    this.slider.checkSizeClick(this.p.mouseX, this.p.mouseY);
+  }
+
+  handleMouseReleased() {
+    if (!this.currentStroke) {
+      return;
+    }
+    if (this.currentStroke.points.length > 1) {
+      this.strokes.push(this.currentStroke);
+      this.redoStrokes = [];
+    }
+    this.currentStroke = null;
   }
 
   setLayout({ paletteX, eraserX, controlGap }) {
@@ -58,7 +110,7 @@ export class ToolBar {
     }
   }
 
-  render(eraserSVG, undoLeftSVG, undoRightSVG, downloadSVG) {
+  render() {
     this.p.noStroke();
     for (let i = 0; i < this.colors.length; i++) {
       let centerX =
@@ -78,18 +130,18 @@ export class ToolBar {
       newButton.render();
     }
 
-    if (!this.eraserButton && eraserSVG) {
+    if (!this.eraserButton && this.eraserSVG) {
       this.eraserButton = new SVGButton(this.p, {
-        img: eraserSVG,
+        img: this.eraserSVG,
         width: 23,
         height: 23,
         positionX: this.eraserX,
         positionY: 40,
       });
     }
-    if (!this.undoButton && undoLeftSVG) {
+    if (!this.undoButton && this.undoLeftSVG) {
       this.undoButton = new SVGButton(this.p, {
-        img: undoLeftSVG,
+        img: this.undoLeftSVG,
         width: 23,
         height: 23,
         positionX: this.undoX,
@@ -97,9 +149,9 @@ export class ToolBar {
         enableActive: false,
       });
     }
-    if (!this.redoButton && undoRightSVG) {
+    if (!this.redoButton && this.undoRightSVG) {
       this.redoButton = new SVGButton(this.p, {
-        img: undoRightSVG,
+        img: this.undoRightSVG,
         width: 23,
         height: 23,
         positionX: this.redoX,
@@ -107,9 +159,9 @@ export class ToolBar {
         enableActive: false,
       });
     }
-    if (!this.downloadButton && downloadSVG) {
+    if (!this.downloadButton && this.downloadSVG) {
       this.downloadButton = new SVGButton(this.p, {
-        img: downloadSVG,
+        img: this.downloadSVG,
         width: 23,
         height: 23,
         positionX: this.downloadX,
@@ -117,6 +169,17 @@ export class ToolBar {
         enableActive: false,
       });
     }
+    if (!this.clearButton && this.trashSVG) {
+      this.clearButton = new SVGButton(this.p, {
+        img: this.trashSVG,
+        width: 23,
+        height: 23,
+        positionX: this.downloadX + this.controlGap,
+        positionY: 40,
+        enableActive: false,
+      });
+    }
+
     if (this.eraserButton) {
       this.eraserButton.isActive = this.isEraser;
       this.eraserButton.render();

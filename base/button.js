@@ -52,14 +52,9 @@ export class RectButton extends Button {
   }
 
   click() {
-    if (this.enableActive) {
-      this.isActive = true;
-    }
-    this.p.fill("#fff");
-    this.p.stroke(0);
-    this.p.strokeWeight(1);
-    this.p.rect(180, 102, 900, 500, 20);
-    this.p.noStroke();
+    // if (this.enableActive) {
+    //   this.isActive = true;
+    // }
   }
 
   render() {

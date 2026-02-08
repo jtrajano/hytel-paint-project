@@ -11,7 +11,12 @@ export class SVGButton extends RectButton {
     if (this.enableActive) {
       this.isActive = true;
     }
-    super.click();
+
+    this.p.fill("#fff");
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    this.p.rect(180, 102, 900, 500, 20);
+    this.p.noStroke();
   }
   render() {
     const hovered = this.isClicked(this.p.mouseX, this.p.mouseY);

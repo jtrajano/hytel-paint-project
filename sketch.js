@@ -1,5 +1,5 @@
-import { ToolBar } from "./base/toolbar.js";
-import { Slider } from "./base/slider.js";
+import { ToolBar } from "./components/toolbar.js";
+import { Slider } from "./components/slider.js";
 import { SVGButton } from "./components/SVGButton.js";
 
 class Sketch {
@@ -16,31 +16,19 @@ class Sketch {
     this.canvasW = 900;
     this.canvasH = 500;
     this.drawingLayer = null;
-    this.clearButton = null;
+
     this.toolbarX = 290;
     this.toolbarY = 25;
     this.toolbarW = 680;
     this.toolbarH = 55;
     this.toolbarPadding = 20;
-    p.preload = () => this.preload();
+
     p.setup = () => this.setup();
     p.initializeTest = (p) => initializeTest(p);
-    p.mousePressed = () => this.handleMousePressed();
-    p.mouseReleased = () => this.handleMouseReleased();
   }
 
   setup() {
     TEST_MODE ? this.p.initializeTest(this.p) : this.initializeCanvas();
-  }
-
-  preload() {
-    this.eraserSVG = this.p.loadImage("assets/eraser-svgrepo-com.svg");
-    this.undoLeftSVG = this.p.loadImage("assets/undo-left-svgrepo-com.svg");
-    this.undoRightSVG = this.p.loadImage("assets/undo-right-svgrepo-com.svg");
-    this.trashSVG = this.p.loadImage("assets/trash-alt-svgrepo-com.svg");
-    this.downloadSVG = this.p.loadImage(
-      "assets/download-square-svgrepo-com.svg",
-    );
   }
 
   initializeCanvas() {
@@ -59,16 +47,7 @@ class Sketch {
     this.p.rect(this.canvasX, this.canvasY, this.canvasW, this.canvasH, 20);
     this.p.noStroke();
     this.slider.initializeComponent(this.p);
-    if (!this.clearButton && this.trashSVG) {
-      this.clearButton = new SVGButton(this.p, {
-        img: this.trashSVG,
-        width: 23,
-        height: 23,
-        positionX: this.toolbar.downloadX + this.toolbar.controlGap,
-        positionY: 40,
-        enableActive: false,
-      });
-    }
+
     this.drawingLayer = this.p.createGraphics(this.canvasW, this.canvasH);
     this.p.drawControls();
   }

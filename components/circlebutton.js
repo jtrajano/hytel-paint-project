@@ -7,6 +7,8 @@ export class CircleButton extends Button {
     this.centerY = centerY;
   }
 
+  click() {}
+
   render() {
     this.p.fill(this.color);
     this.p.circle(this.centerX, this.centerY, this.colorSize);
