@@ -19,13 +19,25 @@ class Slider {
     this.sliderComponent.size(80);
   }
 
+  setLayout({ x, y }) {
+    if (typeof x === "number") {
+      this.sizeControlX = x;
+    }
+    if (typeof y === "number") {
+      this.sizeControlY = y;
+    }
+    if (this.sliderComponent) {
+      this.sliderComponent.position(this.sizeControlX, this.sizeControlY);
+    }
+  }
+
   render() {
     this.brushSize = this.sliderComponent.value();
     this.p.fill(0);
     this.p.textAlign(this.p.LEFT, this.p.CENTER);
     this.p.textSize(12);
     this.p.noStroke();
-    this.p.text(this.brushSize, 660, 50);
+    this.p.text(this.brushSize, this.sizeControlX + 90, this.sizeControlY + 10);
   }
 
   checkSizeClick() {

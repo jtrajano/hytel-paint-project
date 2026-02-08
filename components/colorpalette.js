@@ -28,6 +28,33 @@ class ColorPalette {
     this.p = p;
   }
 
+  setLayout({ paletteX, eraserX, controlGap }) {
+    if (typeof paletteX === "number") {
+      this.paletteX = paletteX;
+    }
+    if (typeof eraserX === "number") {
+      this.eraserX = eraserX;
+    }
+    if (typeof controlGap === "number") {
+      this.controlGap = controlGap;
+    }
+    this.undoX = this.eraserX + this.controlGap;
+    this.redoX = this.eraserX + this.controlGap * 2;
+    this.downloadX = this.eraserX + this.controlGap * 3;
+    if (this.eraserButton) {
+      this.eraserButton.positionX = this.eraserX;
+    }
+    if (this.undoButton) {
+      this.undoButton.positionX = this.undoX;
+    }
+    if (this.redoButton) {
+      this.redoButton.positionX = this.redoX;
+    }
+    if (this.downloadButton) {
+      this.downloadButton.positionX = this.downloadX;
+    }
+  }
+
   render(eraserSVG, undoLeftSVG, undoRightSVG, downloadSVG) {
     this.p.noStroke();
     for (let i = 0; i < this.colors.length; i++) {

@@ -122,55 +122,133 @@ function runTests(p) {
   });
 
   suite("test clear button click", () => {
+    const colorPalette = new ColorPalette(p);
+    const paletteWidth =
+      colorPalette.colors.length * colorPalette.colorSize +
+      (colorPalette.colors.length - 1) * colorPalette.spacing;
+    const controlGap = 30;
+    const gapBetweenPalette = 30;
+    const gapBetweenSlider = 30;
+    const iconWidth = 23;
+    const controlsWidth = controlGap * 4 + iconWidth;
+    const toolbarPadding = 20;
+    const sliderWidth = 80;
+    const sliderLabelGap = 20;
+    const sliderBlockWidth = sliderWidth + sliderLabelGap;
+    const toolbarWidth =
+      paletteWidth +
+      gapBetweenPalette +
+      sliderBlockWidth +
+      gapBetweenSlider +
+      controlsWidth +
+      toolbarPadding * 2;
+    const toolbarX = (1260 - toolbarWidth) / 2;
+    const paletteX = toolbarX + toolbarPadding;
+    const sliderX = paletteX + paletteWidth + gapBetweenPalette;
+    const eraserX = sliderX + sliderBlockWidth + gapBetweenSlider;
+    const clearX = eraserX + controlGap * 4;
     const clearButton = new SVGButton(p, {
       img: null,
       width: 23,
       height: 23,
-      positionX: 880,
+      positionX: clearX,
       positionY: 40,
       enableActive: false,
     });
 
     it("clear button clicked when inside bounds", () => {
       // Click in the center of the button
-      let result = clearButton.isClicked(892, 51);
+      let result = clearButton.isClicked(clearX + 12, 51);
       expect(result).toBe(true);
     });
 
     it("clear button clicked at left edge", () => {
-      // Click at left edge: positionX = 880
-      let result = clearButton.isClicked(880, 50);
+      // Click at left edge
+      let result = clearButton.isClicked(clearX, 50);
       expect(result).toBe(true);
     });
 
     it("clear button clicked at right edge", () => {
-      // Click at right edge: positionX + width = 880 + 23 = 903
-      let result = clearButton.isClicked(903, 50);
+      // Click at right edge: positionX + width
+      let result = clearButton.isClicked(clearX + 23, 50);
       expect(result).toBe(true);
     });
 
     it("clear button not clicked when outside left", () => {
       // Click left of button
-      let result = clearButton.isClicked(870, 50);
+      let result = clearButton.isClicked(clearX - 10, 50);
       expect(result).toBe(false);
     });
 
     it("clear button not clicked when outside right", () => {
       // Click right of button
-      let result = clearButton.isClicked(913, 50);
+      let result = clearButton.isClicked(clearX + 33, 50);
       expect(result).toBe(false);
     });
 
     it("clear button not clicked when outside top", () => {
       // Click above button
-      let result = clearButton.isClicked(892, 30);
+      let result = clearButton.isClicked(clearX + 12, 30);
       expect(result).toBe(false);
     });
 
     it("clear button not clicked when outside bottom", () => {
       // Click below button
-      let result = clearButton.isClicked(892, 70);
+      let result = clearButton.isClicked(clearX + 12, 70);
       expect(result).toBe(false);
+    });
+  });
+
+  suite("test undo redo download", () => {
+    it("undo moves last stroke to redo", () => {
+      const sketch = new Sketch(p);
+      sketch.drawingLayer = p.createGraphics(sketch.canvasW, sketch.canvasH);
+      sketch.strokes = [
+        {
+          color: "#000",
+          size: 2,
+          points: [
+            { x: sketch.canvasX + 1, y: sketch.canvasY + 1 },
+            { x: sketch.canvasX + 2, y: sketch.canvasY + 2 },
+          ],
+        },
+      ];
+      sketch.redoStrokes = [];
+      sketch.undo();
+      expect(sketch.strokes.length).toBe(0);
+      expect(sketch.redoStrokes.length).toBe(1);
+    });
+
+    it("redo restores last undone stroke", () => {
+      const sketch = new Sketch(p);
+      sketch.drawingLayer = p.createGraphics(sketch.canvasW, sketch.canvasH);
+      const stroke = {
+        color: "#000",
+        size: 2,
+        points: [
+          { x: sketch.canvasX + 1, y: sketch.canvasY + 1 },
+          { x: sketch.canvasX + 2, y: sketch.canvasY + 2 },
+        ],
+      };
+      sketch.strokes = [];
+      sketch.redoStrokes = [stroke];
+      sketch.redo();
+      expect(sketch.strokes.length).toBe(1);
+      expect(sketch.redoStrokes.length).toBe(0);
+    });
+
+    it("download triggers save with filename", () => {
+      const sketch = new Sketch(p);
+      sketch.drawingLayer = p.createGraphics(sketch.canvasW, sketch.canvasH);
+      const originalSave = p.save;
+      let savedName = "";
+      p.save = (img, name) => {
+        savedName = name;
+      };
+      sketch.downloadDrawing();
+      p.save = originalSave;
+      expect(savedName.startsWith("drawing-")).toBe(true);
+      expect(savedName.endsWith(".png")).toBe(true);
     });
   });
 }

@@ -13,6 +13,11 @@ class Sketch {
     this.canvasH = 500;
     this.drawingLayer = null;
     this.clearButton = null;
+    this.toolbarX = 290;
+    this.toolbarY = 25;
+    this.toolbarW = 680;
+    this.toolbarH = 55;
+    this.toolbarPadding = 20;
     p.preload = () => this.preload();
     p.setup = () => this.setup();
     p.initializeTest = (p) => initializeTest(p);
@@ -42,7 +47,8 @@ class Sketch {
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
-    this.p.rect(290, 25, 680, 55, 20);
+    this.updateToolbarLayout();
+    this.p.rect(this.toolbarX, this.toolbarY, this.toolbarW, this.toolbarH, 20);
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
@@ -54,7 +60,7 @@ class Sketch {
         img: this.trashSVG,
         width: 23,
         height: 23,
-        positionX: 880,
+        positionX: this.colorPalette.downloadX + this.colorPalette.controlGap,
         positionY: 40,
         enableActive: false,
       });
@@ -81,15 +87,9 @@ class Sketch {
     this.p.fill("#fff");
     this.p.stroke(0);
     this.p.strokeWeight(1);
-    this.p.rect(290, 25, 680, 55, 20);
+    this.updateToolbarLayout();
+    this.p.rect(this.toolbarX, this.toolbarY, this.toolbarW, this.toolbarH, 20);
     this.drawControls();
-
-    // for the label of slider
-    this.p.fill(0);
-    this.p.textAlign(this.p.LEFT, this.p.CENTER);
-    this.p.textSize(12);
-    this.p.noStroke();
-    this.p.text(this.slider.brushSize, 660, 50);
 
     // Redraw canvas area and the drawing layer
     this.p.fill("#fff");
@@ -142,6 +142,43 @@ class Sketch {
           this.p.mouseY - this.canvasY,
         );
       }
+    }
+  }
+
+  updateToolbarLayout() {
+    const paletteWidth =
+      this.colorPalette.colors.length * this.colorPalette.colorSize +
+      (this.colorPalette.colors.length - 1) * this.colorPalette.spacing;
+    const controlGap = 30;
+    const gapBetweenPalette = 30;
+    const gapBetweenSlider = 30;
+    const iconWidth = 23;
+    const sliderWidth = 80;
+    const sliderLabelGap = 20;
+    const sliderBlockWidth = sliderWidth + sliderLabelGap;
+    const controlsWidth = controlGap * 4 + iconWidth;
+    const toolbarWidth =
+      paletteWidth +
+      gapBetweenPalette +
+      sliderBlockWidth +
+      gapBetweenSlider +
+      controlsWidth +
+      this.toolbarPadding * 2;
+    this.toolbarW = toolbarWidth;
+    this.toolbarX = (this.p.width - this.toolbarW) / 2;
+    const paletteX = this.toolbarX + this.toolbarPadding;
+    const sliderX = paletteX + paletteWidth + gapBetweenPalette;
+    const eraserX = sliderX + sliderBlockWidth + gapBetweenSlider;
+    this.colorPalette.setLayout({
+      paletteX,
+      eraserX,
+      controlGap,
+    });
+    this.slider.setLayout({ x: sliderX, y: this.toolbarY + 15 });
+    if (this.clearButton) {
+      this.clearButton.positionX =
+        this.colorPalette.downloadX + this.colorPalette.controlGap;
+      this.clearButton.positionY = this.toolbarY + 15;
     }
   }
 
