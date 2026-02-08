@@ -82,20 +82,22 @@ class RectButton extends Button {
 }
 
 class SVGButton extends RectButton {
-  constructor(p, { img, ...rest }) {
-    super(p, { enableActive: true, ...rest });
+  constructor(p, { img, enableActive = true, ...rest }) {
+    super(p, { enableActive, ...rest });
     this.img = img;
     this.imgInverted = null;
     this.isActive = false;
   }
   click() {
-    this.isActive = true;
+    if (this.enableActive) {
+      this.isActive = true;
+    }
     super.click();
   }
   render() {
     const hovered = this.isClicked(this.p.mouseX, this.p.mouseY);
     const pressed = hovered && this.p.mouseIsPressed;
-    const active = this.isActive || pressed;
+    const active = (this.enableActive && this.isActive) || pressed;
     if (hovered || active) {
       this.p.noStroke();
       this.p.fill(active ? "#2f6feb" : "#e5e5e5");

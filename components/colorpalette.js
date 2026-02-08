@@ -15,13 +15,18 @@ class ColorPalette {
     this.paletteX = 310;
     this.colorSize = 20;
     this.spacing = 10;
-    this.eraserX = 888;
+    this.eraserX = 700;
+    this.controlGap = 30;
+    this.undoX = this.eraserX + this.controlGap;
+    this.redoX = this.eraserX + this.controlGap * 2;
     this.isEraser = false;
     this.eraserButton = null;
+    this.undoButton = null;
+    this.redoButton = null;
     this.p = p;
   }
 
-  render(eraserSVG) {
+  render(eraserSVG, undoLeftSVG, undoRightSVG) {
     this.p.noStroke();
     for (let i = 0; i < this.colors.length; i++) {
       let centerX =
@@ -50,9 +55,35 @@ class ColorPalette {
         positionY: 40,
       });
     }
+    if (!this.undoButton && undoLeftSVG) {
+      this.undoButton = new SVGButton(this.p, {
+        img: undoLeftSVG,
+        width: 23,
+        height: 23,
+        positionX: this.undoX,
+        positionY: 40,
+        enableActive: false,
+      });
+    }
+    if (!this.redoButton && undoRightSVG) {
+      this.redoButton = new SVGButton(this.p, {
+        img: undoRightSVG,
+        width: 23,
+        height: 23,
+        positionX: this.redoX,
+        positionY: 40,
+        enableActive: false,
+      });
+    }
     if (this.eraserButton) {
       this.eraserButton.isActive = this.isEraser;
       this.eraserButton.render();
+    }
+    if (this.undoButton) {
+      this.undoButton.render();
+    }
+    if (this.redoButton) {
+      this.redoButton.render();
     }
     // Draw eraser button as circle
     // let eraserCenterX = this.eraserX + this.colorSize / 2;
@@ -114,5 +145,13 @@ class ColorPalette {
       this.activePaletteColor = "#fff"; // Set to background color
       return;
     }
+  }
+
+  isUndoClicked(mouseX, mouseY) {
+    return this.undoButton ? this.undoButton.isClicked(mouseX, mouseY) : false;
+  }
+
+  isRedoClicked(mouseX, mouseY) {
+    return this.redoButton ? this.redoButton.isClicked(mouseX, mouseY) : false;
   }
 }
