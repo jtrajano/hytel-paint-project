@@ -11,6 +11,7 @@ class Sketch {
     this.canvasY = 102;
     this.canvasW = 900;
     this.canvasH = 500;
+    this.drawingLayer = null;
     this.clearButton = null;
     p.preload = () => this.preload();
     p.setup = () => this.setup();
@@ -22,13 +23,17 @@ class Sketch {
   setup() {
     TEST_MODE ? this.p.initializeTest(this.p) : this.initializeCanvas();
   }
+
   preload() {
     this.eraserSVG = this.p.loadImage("assets/eraser-svgrepo-com.svg");
     this.undoLeftSVG = this.p.loadImage("assets/undo-left-svgrepo-com.svg");
     this.undoRightSVG = this.p.loadImage("assets/undo-right-svgrepo-com.svg");
     this.trashSVG = this.p.loadImage("assets/trash-alt-svgrepo-com.svg");
-    //debugger;
+    this.downloadSVG = this.p.loadImage(
+      "assets/download-square-svgrepo-com.svg",
+    );
   }
+
   initializeCanvas() {
     this.p.draw = () => this.draw();
     this.p.drawControls = () => this.drawControls();
@@ -54,6 +59,7 @@ class Sketch {
         enableActive: false,
       });
     }
+    this.drawingLayer = this.p.createGraphics(this.canvasW, this.canvasH);
     this.p.drawControls();
   }
 
@@ -62,9 +68,9 @@ class Sketch {
       this.eraserSVG,
       this.undoLeftSVG,
       this.undoRightSVG,
+      this.downloadSVG,
     );
     this.slider.render();
-    //this.eraserButton.render();
     if (this.clearButton) {
       this.clearButton.render();
     }
@@ -85,10 +91,21 @@ class Sketch {
     this.p.noStroke();
     this.p.text(this.slider.brushSize, 660, 50);
 
-    // Draw on canvas
-    this.p.stroke(this.colorPalette.activePaletteColor);
-    this.p.strokeWeight(this.slider.brushSize);
-    this.p.strokeCap(this.p.ROUND);
+    // Redraw canvas area and the drawing layer
+    this.p.fill("#fff");
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    this.p.rect(this.canvasX, this.canvasY, this.canvasW, this.canvasH, 20);
+    this.p.noStroke();
+    if (this.drawingLayer) {
+      this.p.image(this.drawingLayer, this.canvasX, this.canvasY);
+    }
+
+    if (this.drawingLayer) {
+      this.drawingLayer.stroke(this.colorPalette.activePaletteColor);
+      this.drawingLayer.strokeWeight(this.slider.brushSize);
+      this.drawingLayer.strokeCap(this.p.ROUND);
+    }
 
     let upperBound = this.canvasY + this.slider.brushSize / 2;
     let rightBound = this.canvasX + this.canvasW - this.slider.brushSize / 2;
@@ -117,7 +134,14 @@ class Sketch {
         x: this.p.mouseX,
         y: this.p.mouseY,
       });
-      this.p.line(this.p.pmouseX, this.p.pmouseY, this.p.mouseX, this.p.mouseY);
+      if (this.drawingLayer) {
+        this.drawingLayer.line(
+          this.p.pmouseX - this.canvasX,
+          this.p.pmouseY - this.canvasY,
+          this.p.mouseX - this.canvasX,
+          this.p.mouseY - this.canvasY,
+        );
+      }
     }
   }
 
@@ -138,6 +162,10 @@ class Sketch {
     }
     if (this.colorPalette.isRedoClicked(this.p.mouseX, this.p.mouseY)) {
       this.redo();
+      return;
+    }
+    if (this.colorPalette.isDownloadClicked(this.p.mouseX, this.p.mouseY)) {
+      this.downloadDrawing();
       return;
     }
     this.colorPalette.checkColorClick(this.p.mouseX, this.p.mouseY);
@@ -174,30 +202,55 @@ class Sketch {
   }
 
   redrawFromStrokes() {
-    this.p.noStroke();
-    this.p.fill("#fff");
-    this.p.rect(this.canvasX, this.canvasY, this.canvasW, this.canvasH, 20);
+    if (!this.drawingLayer) {
+      return;
+    }
+    this.drawingLayer.clear();
     for (const stroke of this.strokes) {
-      this.p.stroke(stroke.color);
-      this.p.strokeWeight(stroke.size);
-      this.p.strokeCap(this.p.ROUND);
+      this.drawingLayer.stroke(stroke.color);
+      this.drawingLayer.strokeWeight(stroke.size);
+      this.drawingLayer.strokeCap(this.p.ROUND);
       for (let i = 1; i < stroke.points.length; i++) {
         const prev = stroke.points[i - 1];
         const cur = stroke.points[i];
-        this.p.line(prev.x, prev.y, cur.x, cur.y);
+        this.drawingLayer.line(
+          prev.x - this.canvasX,
+          prev.y - this.canvasY,
+          cur.x - this.canvasX,
+          cur.y - this.canvasY,
+        );
       }
     }
   }
 
   clearCanvas() {
-    this.p.fill("#fff");
-    this.p.stroke(0);
-    this.p.strokeWeight(1);
-    this.p.rect(this.canvasX, this.canvasY, this.canvasW, this.canvasH, 20);
-    this.p.noStroke();
+    if (this.drawingLayer) {
+      this.drawingLayer.clear();
+    }
     this.strokes = [];
     this.redoStrokes = [];
     this.currentStroke = null;
+  }
+
+  downloadDrawing() {
+    const now = new Date();
+    const timestamp =
+      now.getFullYear().toString() +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      String(now.getDate()).padStart(2, "0") +
+      "-" +
+      String(now.getHours()).padStart(2, "0") +
+      String(now.getMinutes()).padStart(2, "0") +
+      String(now.getSeconds()).padStart(2, "0");
+    if (!this.drawingLayer) {
+      return;
+    }
+    const output = this.p.createGraphics(this.canvasW, this.canvasH);
+    output.background(255);
+    output.image(this.drawingLayer, 0, 0);
+    const img = output.get();
+    output.remove();
+    this.p.save(img, `drawing-${timestamp}.png`);
   }
 }
 

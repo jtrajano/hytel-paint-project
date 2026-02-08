@@ -19,14 +19,16 @@ class ColorPalette {
     this.controlGap = 30;
     this.undoX = this.eraserX + this.controlGap;
     this.redoX = this.eraserX + this.controlGap * 2;
+    this.downloadX = this.eraserX + this.controlGap * 3;
     this.isEraser = false;
     this.eraserButton = null;
     this.undoButton = null;
     this.redoButton = null;
+    this.downloadButton = null;
     this.p = p;
   }
 
-  render(eraserSVG, undoLeftSVG, undoRightSVG) {
+  render(eraserSVG, undoLeftSVG, undoRightSVG, downloadSVG) {
     this.p.noStroke();
     for (let i = 0; i < this.colors.length; i++) {
       let centerX =
@@ -75,6 +77,16 @@ class ColorPalette {
         enableActive: false,
       });
     }
+    if (!this.downloadButton && downloadSVG) {
+      this.downloadButton = new SVGButton(this.p, {
+        img: downloadSVG,
+        width: 23,
+        height: 23,
+        positionX: this.downloadX,
+        positionY: 40,
+        enableActive: false,
+      });
+    }
     if (this.eraserButton) {
       this.eraserButton.isActive = this.isEraser;
       this.eraserButton.render();
@@ -84,6 +96,9 @@ class ColorPalette {
     }
     if (this.redoButton) {
       this.redoButton.render();
+    }
+    if (this.downloadButton) {
+      this.downloadButton.render();
     }
     // Draw eraser button as circle
     // let eraserCenterX = this.eraserX + this.colorSize / 2;
@@ -153,5 +168,11 @@ class ColorPalette {
 
   isRedoClicked(mouseX, mouseY) {
     return this.redoButton ? this.redoButton.isClicked(mouseX, mouseY) : false;
+  }
+
+  isDownloadClicked(mouseX, mouseY) {
+    return this.downloadButton
+      ? this.downloadButton.isClicked(mouseX, mouseY)
+      : false;
   }
 }
