@@ -2,7 +2,7 @@ import { ToolBar } from "../components/toolbar.js";
 import { SVGButton } from "../components/SVGButton.js";
 import { Sketch } from "../sketch.js";
 
-export const TEST_MODE = true;
+export const TEST_MODE = false;
 
 export function initializeTest(p) {
   p.noCanvas();
