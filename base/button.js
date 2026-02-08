@@ -51,12 +51,6 @@ export class RectButton extends Button {
     );
   }
 
-  click() {
-    // if (this.enableActive) {
-    //   this.isActive = true;
-    // }
-  }
-
   render() {
     this.p.fill(
       this.enableActive && this.isActive ? this.activeColor : this.color,
